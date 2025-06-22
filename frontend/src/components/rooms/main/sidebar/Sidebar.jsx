@@ -9,7 +9,7 @@ import {
 } from "../../../../redux/feature/RoomActionSlicer";
 import { useNavigate } from "react-router-dom";
 import RoomList from "./RoomList";
-const Sidebar = () => {
+const Sidebar = ({ user }) => {
   // const [dashBoardOpen, setDashBoardOpen] = useState(true);
   const dashBoardOpen = useSelector((state) => state.room.dashBoardOpen);
   const roomList = useSelector((state) => state.room.roomList);
@@ -145,15 +145,17 @@ const Sidebar = () => {
         >
           <div className="flex items-center space-x-3">
             <motion.div
-              className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-indigo-600 font-bold"
+              className="h-10 w-10 rounded-full bg-white text-3xl text-center flex items-center justify-center text-indigo-600 font-bold"
               whileHover={{ rotate: 360 }}
               transition={{ duration: 0.5 }}
             >
-              JD
+              {user?.username[0]}
             </motion.div>
             <div>
-              <p className="text-white font-medium">John Doe</p>
-              <p className="text-indigo-200 text-sm">Admin</p>
+              <p className="text-white font-medium">
+                {user ? user.username : "john Doe"}
+              </p>
+              <p className="text-indigo-200 text-sm">User</p>
             </div>
           </div>
         </motion.div>

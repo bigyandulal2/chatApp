@@ -7,9 +7,8 @@ import App from "./App.jsx";
 import ChatAppLayout from "./components/rooms/main/ChatAppLayout.jsx";
 import { store } from "./redux/Store.js";
 import { Provider } from "react-redux";
-import CreateRoomModal from "./components/rooms/main/modals/CreateRoomModal.jsx";
-import JoinRoomModal from "./components/rooms/main/modals/JoinRoomModal.jsx";
-
+import SignInForm from "./components/Hero/auth/SignInForm.jsx";
+import ProtectedRoute from "./route/ProtectedRoute.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
@@ -17,7 +16,15 @@ createRoot(document.getElementById("root")).render(
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/signup" element={<SignUpForm />} />
-          <Route path="/room" element={<ChatAppLayout />}></Route>
+          <Route path="/signin" element={<SignInForm />} />
+          <Route
+            path="/room"
+            element={
+              <ProtectedRoute>
+                <ChatAppLayout />
+              </ProtectedRoute>
+            }
+          ></Route>
         </Routes>
       </BrowserRouter>
     </Provider>

@@ -1,38 +1,31 @@
+// require("dotenv").config(); // If using environment variables
+
+require("dotenv").config();
+
 const express = require("express");
-const app = express();
-const PORT = 4000;
-const http = require("http").Server(app);
 const cors = require("cors");
-app.use(cors());
+const connectDB = require("./config/db");
+
+const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:5173", // allow your frontend origin
+    credentials: true,
+  })
+);
 app.use(express.json());
-const socketIO = require("socket.io")(http, {
-  cors: {
-    origin: "http://localhost:5173",
-  },
-});
+const userRoutes = require("./routes/userRoutes");
+app.use("/api/users", userRoutes);
+// Connect to Database
+connectDB();
 
-//Add this before the app.get() block
-socketIO.on("connection", (socket) => {
-  console.log(`⚡: ${socket.id} user just connected!`);
-
-  socket.on("message", (data) => {
-    console.log(data);
-    socketIO.emit("message-recieved", {
-      userMessage: data.text,
-      userName: data.userName,
-    });
-  });
-
-  socket.on("disconnect", () => {
-    console.log("🔥: A user disconnected");
-  });
-});
+// Basic route
 app.get("/", (req, res) => {
-  return res.json({
-    message: "Hello world",
-  });
+  res.send("API Running");
 });
 
-http.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`);
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
 });
