@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
 export default function CTA() {
   const navigate = useNavigate();
   const login = useSelector((state) => state.login.login);

@@ -1,11 +1,8 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser, logoutUser } from "../../redux/feature/LoginActionSlicer";
-export default function Navbar({ scrolled }) {
-  // const [login, setLogin] = useState(localStorage.getItem("login"));
-  // const token = localStorage.getItem("token");
+export default function NavBar({ scrolled }) {
   const dispatch = useDispatch();
   const login = useSelector((state) => state.login.login);
   function handleLogOut() {

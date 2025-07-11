@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { RxCross1 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  createRoom,
-  addRoom,
-} from "../../../../redux/feature/RoomActionSlicer"; // Make sure addRoomToList action exists
+import { createRoom, addRoom } from "../../redux/feature/RoomActionSlicer";
 
 export default function CreateRoomModal() {
   const roomList = useSelector((state) => state.room.roomList);
@@ -57,7 +54,7 @@ export default function CreateRoomModal() {
           <div>
             <label
               htmlFor="roomName"
-              className="block text-sm font-medium mb-1"
+              className="block text-sm font-medium mb-1 text-white"
             >
               Room Name
             </label>
@@ -67,12 +64,15 @@ export default function CreateRoomModal() {
               value={roomData.roomName}
               onChange={handleChange}
               placeholder="Enter room name"
-              className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+              className="w-full px-4 py-2 rounded text-white bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
             />
           </div>
 
           <div>
-            <label htmlFor="roomId" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="roomId"
+              className="block text-white text-sm font-medium mb-1"
+            >
               Room ID
             </label>
             <input
@@ -88,7 +88,7 @@ export default function CreateRoomModal() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium mb-1"
+              className="block text-sm text-white font-medium mb-1"
             >
               Password
             </label>
@@ -106,7 +106,7 @@ export default function CreateRoomModal() {
         <div className="mt-6 flex justify-center">
           <button
             type="submit"
-            className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 rounded-md font-medium transition-colors"
+            className="px-6 py-2 text-white bg-indigo-500 hover:bg-indigo-600 rounded-md font-medium transition-colors"
           >
             Create Room
           </button>

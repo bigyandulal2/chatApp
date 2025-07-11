@@ -1,6 +1,6 @@
 import { color, motion } from "framer-motion";
 import { FiLock, FiEye, FiEyeOff, FiAlertCircle } from "react-icons/fi";
-import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
+import PasswordStrengthIndicator from "./PasswordIndicator";
 import { useState } from "react";
 export default function SignUpStep2({
   formData,

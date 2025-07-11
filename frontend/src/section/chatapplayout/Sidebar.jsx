@@ -6,9 +6,8 @@ import {
   createRoom,
   joinRoom,
   toggleDashboard,
-} from "../../../../redux/feature/RoomActionSlicer";
-import { useNavigate } from "react-router-dom";
-import RoomList from "./RoomList";
+} from "../../redux/feature/RoomActionSlicer";
+
 const Sidebar = ({ user }) => {
   // const [dashBoardOpen, setDashBoardOpen] = useState(true);
   const dashBoardOpen = useSelector((state) => state.room.dashBoardOpen);
@@ -52,7 +51,7 @@ const Sidebar = ({ user }) => {
       {/* for mobile creating a hamburger menu  */}
 
       <motion.div
-        className={`bg-indigo-600 ${
+        className={`bg-black ${
           dashBoardOpen ? "basis-1/3" : "basis-1"
         } hidden  md:flex  border-r-4 border-indigo-700 p-6 flex flex-col h-full`}
         initial="hidden"
@@ -124,16 +123,7 @@ const Sidebar = ({ user }) => {
                 No Rooms active
               </h1>
             )}
-            {/* {roomList?.map((room) => (
-              <motion.div
-                key={room}
-                className="bg-indigo-500/50 hover:bg-indigo-500/70 text-white p-3 rounded-lg cursor-pointer"
-                whileHover={{ x: 5 }}
-                variants={itemVariants}
-              >
-                Room {room}
-              </motion.div>
-            ))} */}
+
             {roomList.length >= 1 && <RoomList roomList={roomList} />}
           </div>
         </motion.div>

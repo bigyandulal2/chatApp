@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import SignUpSocial from "./SignUp/SignUpSocial/SignUpSocial";
+import SignUpSocial from "../section/signupform/SignUpSocial";
 import { FiMail, FiAlertCircle, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { useApi } from "../../../hooks/useApi";
+import { useApi } from "../hooks/useApi";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../../../redux/feature/LoginActionSlicer";
-import "./signinForm.css";
+import { loginUser } from "../redux/feature/LoginActionSlicer";
+import "../css/SignInForm.css";
 
 export default function SignInForm() {
   const [formData, setFormData] = useState({

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { RxCommit, RxCross1 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
-import { joinRoom } from "../../../../redux/feature/RoomActionSlicer";
+import { joinRoom } from "../../redux/feature/RoomActionSlicer";
 
 export default function JoinRoomModal() {
   const dispatch = useDispatch();
@@ -45,7 +45,10 @@ export default function JoinRoomModal() {
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="roomId" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="roomId"
+              className="block text-white text-sm font-medium mb-1"
+            >
               Room ID
             </label>
             <input
@@ -60,7 +63,7 @@ export default function JoinRoomModal() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium mb-1"
+              className="block text-sm text-white font-medium mb-1"
             >
               Password
             </label>
@@ -77,7 +80,7 @@ export default function JoinRoomModal() {
         <div className="mt-6 flex justify-center">
           <button
             type="submit"
-            className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 rounded-md font-medium transition-colors"
+            className="px-6 py-2 text-white bg-indigo-500 hover:bg-indigo-600 rounded-md font-medium transition-colors"
           >
             Join Room
           </button>
