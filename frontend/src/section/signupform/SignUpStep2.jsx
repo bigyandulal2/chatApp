@@ -40,6 +40,8 @@ export default function SignUpStep2({
         onChange={handlePasswordChange}
         showPassword={showPassword}
         setShowPassword={setShowPassword}
+        hasError={formData.password && !isPasswordValid()}
+        errorMessage="Password must be at least 8 characters long"
       />
       <PasswordStrengthIndicator strength={passwordStrength} />
 
