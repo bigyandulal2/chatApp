@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { RxCommit, RxCross1 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
 import { joinRoom } from "../../redux/feature/RoomActionSlicer";
-
+import axios from "axios";
 export default function JoinRoomModal() {
   const dispatch = useDispatch();
   const roomList = useSelector((state) => state.room.roomList);
@@ -10,18 +10,32 @@ export default function JoinRoomModal() {
     roomId: "",
     password: "",
   });
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    const roomId = roomList.find((item) => item.roomId === roomData.roomId);
-    if (!roomId) {
-      alert("the room doesnot exist");
+    const { roomId, password } = roomData;
+
+    if (!roomId || !password) {
+      alert("field cannot be empty");
       return;
     }
-    if (roomId.password !== roomData.password) {
-      alert("invalid password!!");
-      return;
+    try {
+      const response = await axios.post("/api/rooms/joinRoom", roomData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.data.success) {
+        throw new Error(
+          response.data.message || "room id and credentials donot match"
+        );
+      }
+      console.log(response.data);
+      dispatch(joinRoom(false));
+    } catch (error) {
+      alert(error?.response?.data);
+      console.log(error);
     }
-    alert("room successful joinin");
   }
   console.log("roomlist", roomList);
   console.log("roomData", roomData);

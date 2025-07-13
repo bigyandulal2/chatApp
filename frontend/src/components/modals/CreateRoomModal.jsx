@@ -1,40 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RxCross1 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
 import { createRoom, addRoom } from "../../redux/feature/RoomActionSlicer";
+import { socket } from "../../utils/Socket";
 
+import axios from "axios";
 export default function CreateRoomModal() {
   const roomList = useSelector((state) => state.room.roomList);
-  console.log("createRoomModal roomlist", roomList);
+  useEffect(() => {}, []);
   const dispatch = useDispatch();
   const [roomData, setRoomData] = useState({
     roomName: "",
     roomId: "",
     password: "",
   });
-
   const handleChange = (e) => {
     setRoomData({ ...roomData, [e.target.id]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     // Basic validation
     if (!roomData.roomName || !roomData.roomId || !roomData.password) {
       alert("Please fill all fields.");
       return;
     }
-    const existRoomId = roomList.find(
-      (item) => item.roomId === roomData.roomId
-    );
-    if (existRoomId) {
-      alert("roomId already exist,sorry you cannot join the room");
-      return;
+    try {
+      const response = await axios.post("/api/rooms/createRoom", roomData);
+      console.log(response.data);
+      dispatch(createRoom(false));
+    } catch (error) {
+      const msg = error.response?.data?.message || "Something went wrong!";
+      alert(msg);
     }
 
-    dispatch(addRoom(roomData)); // Add to list
-    dispatch(createRoom(false)); // Close modal
+    // dispatch(addRoom(roomData)); // Add to list
+
+    // Close modal
   };
 
   return (
