@@ -52,8 +52,10 @@ export default function SignInForm() {
   useEffect(() => {
     if (loginResponse && loginResponse.token) {
       setLoginError(false);
-      dispatch(loginUser({ token: loginResponse.token }));
+      console.log("here is from the signin form", loginResponse);
+      dispatch(loginUser(loginResponse));
       alert("Login successful!");
+      console.log("loginresponsehere", loginResponse);
       navigate("/room", { state: { data: loginResponse } });
     }
   }, [loginResponse, navigate]);
@@ -90,7 +92,7 @@ export default function SignInForm() {
             errorMessage="Please enter a valid email address"
           />
           <PasswordInput
-            label="Create Password"
+            label="Password"
             id="password"
             name="password"
             value={formData.password}

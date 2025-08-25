@@ -30,7 +30,8 @@ export default function JoinRoomModal() {
           response.data.message || "room id and credentials donot match"
         );
       }
-      console.log(response.data);
+      console.log("this is from join room modal", response.data);
+      alert("success joining room");
       dispatch(joinRoom(false));
     } catch (error) {
       alert(error?.response?.data);

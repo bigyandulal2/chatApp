@@ -5,8 +5,9 @@ import { createRoom, addRoom } from "../../redux/feature/RoomActionSlicer";
 import { socket } from "../../utils/Socket";
 
 import axios from "axios";
-export default function CreateRoomModal() {
+export default function CreateRoomModal({ onRoomCreated }) {
   const roomList = useSelector((state) => state.room.roomList);
+
   useEffect(() => {}, []);
   const dispatch = useDispatch();
   const [roomData, setRoomData] = useState({
@@ -28,11 +29,15 @@ export default function CreateRoomModal() {
     try {
       const response = await axios.post("/api/rooms/createRoom", roomData);
       console.log(response.data);
-      dispatch(createRoom(false));
+      if (response.data.success) {
+        onRoomCreated();
+      }
+      // dispatch(createRoom(false));
     } catch (error) {
       const msg = error.response?.data?.message || "Something went wrong!";
       alert(msg);
     }
+    dispatch(createRoom(false));
 
     // dispatch(addRoom(roomData)); // Add to list
 

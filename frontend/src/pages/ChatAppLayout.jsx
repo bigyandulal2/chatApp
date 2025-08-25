@@ -1,14 +1,17 @@
 import React from "react";
-import Sidebar from "../section/chatapplayout/Sidebar";
 import { useProfile } from "../hooks/useProfile";
-import ChatMessage from "../section/chatapplayout/ChatMessage";
+import AvailableRoom from "../section/chatapplayout/AvailableRoom";
+import RoomHeader from "../section/chatapplayout/RoomHeader";
 export default function ChatAppLayout() {
   const { user, loading, error } = useProfile();
-  console.log("user detail", user);
+
+  // console.log("user detail", user);
   return (
-    <div className=" h-screen  flex flex-col md:flex-row ">
-      <Sidebar user={user} />
-      <ChatMessage />
+    <div className=" h-screen bg-gray-900">
+      {/* <Sidebar user={user} /> */}
+      {/* <ChatMessage /> */}
+      <RoomHeader />
+      <AvailableRoom />
     </div>
   );
 }

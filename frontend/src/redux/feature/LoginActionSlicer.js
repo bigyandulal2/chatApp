@@ -11,12 +11,19 @@ export const LoginActionSlicer = createSlice({
     loginUser: (state, action) => {
       state.login = true;
       localStorage.setItem("login", "true");
-      if (action.payload?.token) {
-        localStorage.setItem("token", action.payload.token);
+      // console.log("data here from slicer", action.payload);
+
+      const { token, name } = action.payload;
+      console.log("from data slcier", token, name);
+
+      if (token && name) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", name);
       }
     },
     logoutUser: (state) => {
       state.login = false;
+      localStorage.removeItem("user");
       localStorage.removeItem("login");
       localStorage.removeItem("token");
     },

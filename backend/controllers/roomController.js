@@ -53,3 +53,20 @@ exports.joinRoom = async (req, res) => {
     },
   });
 };
+exports.allRooms = async (req, res) => {
+  console.log("all room has been here hitted!");
+  const rooms = await Room.find({}, "roomId roomName");
+  if (!rooms) {
+    return res.status(404).json({
+      message: "room not found",
+      success: false,
+    });
+  }
+  console.log(rooms);
+  res.status(200).json({
+    message: "room successfully found here",
+    success: true,
+    count: rooms.length,
+    data: rooms,
+  });
+};

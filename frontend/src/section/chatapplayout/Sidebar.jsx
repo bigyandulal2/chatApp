@@ -52,7 +52,7 @@ const Sidebar = ({ user }) => {
 
       <motion.div
         className={`bg-black ${
-          dashBoardOpen ? "basis-1/3" : "basis-1"
+          dashBoardOpen ? "basis-1/5" : "basis-1"
         } hidden  md:flex  border-r-4 border-indigo-700 p-6 flex flex-col h-full`}
         initial="hidden"
         animate="visible"

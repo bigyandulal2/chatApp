@@ -38,10 +38,21 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  socket.on("join-room", (roomId) => {
+    socket.join(roomId);
+    console.log(`Socket ${socket.id} joined room ${roomId}`);
+    socket.emit("joinRoomLayout", true);
+    // Notify others in the room
+    socket.to(roomId).emit("user-joined", socket.id);
+  });
+
   socket.on("disconnect", () => {
-    console.log("socket id disconnected", socket.id);
+    console.log("User disconnected:", socket.id);
   });
 });
+
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {

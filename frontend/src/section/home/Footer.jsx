@@ -7,7 +7,7 @@ export default function Footer() {
             <div className="bg-blue-500 w-8 h-8 rounded-lg flex items-center justify-center">
               <span className="font-bold text-white">C</span>
             </div>
-            <span className="text-xl font-bold">ChatApp</span>
+            <span className="text-xl font-bold">YapSpace</span>
           </div>
           <p className="text-gray-400">
             Connecting people through innovative communication solutions since
@@ -36,20 +36,49 @@ export default function Footer() {
 
       <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
         <p className="text-gray-400 mb-4 md:mb-0">
-          © 2025 ChatApp. All rights reserved.
+          © 2025 YapSpace. All rights reserved.
         </p>
         <div className="flex space-x-6">
-          {["Twitter", "Facebook", "Instagram", "LinkedIn"].map(
+          {/* {["Twitter", "Facebook", "Instagram", "LinkedIn"].map(
             (social, index) => (
               <a
                 key={index}
                 href="#"
                 className="text-gray-400 hover:text-white transition-colors"
+                onClick={()=>handleClick(social)}
               >
                 {social}
               </a>
             )
-          )}
+          )} */}
+          <a
+            href="https://www.linkedin.com/in/bigyan-dulal-84548b302/"
+            className="text-gray-400 hover:text-white transition-colors"
+            target="blank"
+          >
+            LinkedIn
+          </a>
+          <a
+            href="https://www.linkedin.com/in/bigyan-dulal-84548b302/"
+            className="text-gray-400 hover:text-white transition-colors"
+            target="blank"
+          >
+            X
+          </a>
+          <a
+            href="https://www.linkedin.com/in/bigyan-dulal-84548b302/"
+            className="text-gray-400 hover:text-white transition-colors"
+            target="blank"
+          >
+            Facebook
+          </a>
+          <a
+            href="https://www.linkedin.com/in/bigyan-dulal-84548b302/"
+            className="text-gray-400 hover:text-white transition-colors"
+            target="blank"
+          >
+            Instagram
+          </a>
         </div>
       </div>
     </footer>

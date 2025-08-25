@@ -45,6 +45,8 @@ export default function SignUpForm() {
       }
 
       console.log("Registration successful:", data);
+      localStorage.setItem("user", data.name);
+      // localStorage.setItem("token", response.token);
       setLoginError(false);
       setFormStep(2);
       dispatch(loginUser(data));

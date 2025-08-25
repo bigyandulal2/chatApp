@@ -8,7 +8,8 @@ export const useProfile = () => {
   const [error, setError] = useState(null);
 
   const token = localStorage.getItem("token");
-  console.log("tokenfrom useProfile", token);
+
+  // console.log("tokenfrom useProfile", token);
 
   useEffect(() => {
     const fetchUser = async () => {

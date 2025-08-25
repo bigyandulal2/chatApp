@@ -1,6 +1,10 @@
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function Hero() {
+  const login = useSelector((state) => state.login.login);
+  const navigate = useNavigate();
   return (
     <motion.section
       className="flex flex-col md:flex-row items-center justify-between px-6 md:px-16 py-16 md:py-24"
@@ -36,13 +40,27 @@ export default function Hero() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          <motion.button
-            className="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg font-medium text-lg transition-colors"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Get Started
-          </motion.button>
+          {login && (
+            <motion.button>
+              <motion.button
+                className="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg font-medium text-lg transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate("/room")}
+              >
+                MyRooms
+              </motion.button>
+            </motion.button>
+          )}
+          {!login && (
+            <motion.button
+              className="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg font-medium text-lg transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Get Started
+            </motion.button>
+          )}
 
           <motion.button
             className="bg-transparent border border-gray-400 hover:border-white px-8 py-3 rounded-lg font-medium text-lg transition-colors"
@@ -71,7 +89,7 @@ export default function Hero() {
               <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
               <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
               <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
-              <div className="text-sm font-medium">ChatApp</div>
+              <div className="text-sm font-medium">YapSpace</div>
             </div>
 
             <div className="p-4 h-64 flex flex-col">

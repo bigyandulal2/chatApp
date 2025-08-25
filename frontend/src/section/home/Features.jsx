@@ -23,7 +23,7 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="bg-gray-800 px-6 md:px-16 py-16">
+    <section className="bg-gray-800 px-6 md:px-16 py-16" id="features">
       <motion.div
         className="text-center mb-12"
         initial={{ opacity: 0, y: 30 }}

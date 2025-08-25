@@ -1,0 +1,57 @@
+.roomlist {
+  padding-inline: 20px;
+  /* display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center; */
+  padding-top: 100px;
+  padding-bottom: 50px;
+  justify-items: center;
+}
+.roomcard {
+  /* background-color: purple; */
+  /* height: 320px; */
+  border-radius: 10px;
+  padding-inline: 30px;
+  background-color: white;
+  opacity: 0.8;
+  /* flex-grow: 1; */
+}
+
+.roomcard:hover {
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 3px 8px;
+  opacity: 0.9;
+}
+.roomcard-header {
+  text-align: center;
+  padding-block: 10px;
+  font-weight: bolder;
+}
+.roomcard-content {
+  padding-inline: 10px;
+}
+.roomcard-circle {
+  list-style: none;
+  width: 70px;
+  height: 70px;
+  border-radius: 1000px;
+  border: 2px solid black;
+  text-align: center;
+}
+.roomcard-footer {
+  padding-block: 20px;
+  padding-inline: 10px;
+}
+.roomcard-btn {
+  text-align: center;
+  /* border: 2px solid black; */
+}
+.btn-container {
+  border: 2px solid blue;
+  padding: 4px;
+  border-radius: 10px;
+  color: white;
+  background-color: blue;
+  text-align: center;
+  cursor: pointer;
+}

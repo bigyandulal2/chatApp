@@ -9,6 +9,7 @@ import { store } from "./redux/Store.js";
 import { Provider } from "react-redux";
 import SignInForm from "./pages/SignInForm.jsx";
 import ProtectedRoute from "./route/ProtectedRoute.jsx";
+import ChatMessageLayout from "./pages/ChatMessageLayout.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
@@ -24,7 +25,15 @@ createRoot(document.getElementById("root")).render(
                 <ChatAppLayout />
               </ProtectedRoute>
             }
-          ></Route>
+          />
+          <Route
+            path="/room/:id"
+            element={
+              <ProtectedRoute>
+                <ChatMessageLayout />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </Provider>

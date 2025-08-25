@@ -4,6 +4,8 @@ import Hero from "../section/home/Hero";
 import Features from "../section/home/Features";
 import CTA from "../section/home/CTA";
 import Footer from "../section/home/Footer";
+import Pricing from "../section/home/Pricing";
+import About from "../section/home/About";
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
 
@@ -26,7 +28,9 @@ export default function Home() {
       <NavBar scrolled={scrolled} />
       <Hero />
       <Features />
+      <Pricing />
       <CTA />
+      <About />
       <Footer />
     </>
   );

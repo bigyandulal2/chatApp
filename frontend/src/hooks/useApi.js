@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
-export const useApi = (url, method = "GET", options = {}) => {
-  console.log("option", options);
+export const useApi = (url, method = "GET") => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  // console.log("data from hoook", data);
   const fetchData = useCallback(
     async (bodyData = null) => {
       setLoading(true);
@@ -16,7 +15,7 @@ export const useApi = (url, method = "GET", options = {}) => {
         const response = await axios({
           url,
           method,
-          ...options,
+
           data: bodyData,
         });
 
@@ -27,7 +26,7 @@ export const useApi = (url, method = "GET", options = {}) => {
         setLoading(false);
       }
     },
-    [url, method, options]
+    [url, method]
   );
 
   useEffect(() => {
