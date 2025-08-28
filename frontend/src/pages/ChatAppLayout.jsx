@@ -8,8 +8,7 @@ export default function ChatAppLayout() {
   // console.log("user detail", user);
   return (
     <div className=" h-screen bg-gray-900">
-      {/* <Sidebar user={user} /> */}
-      {/* <ChatMessage /> */}
+    
       <RoomHeader />
       <AvailableRoom />
     </div>

@@ -46,16 +46,15 @@ export default function SignUpForm() {
 
       console.log("Registration successful:", data);
       localStorage.setItem("user", data.name);
-      // localStorage.setItem("token", response.token);
+    
       setLoginError(false);
       setFormStep(2);
       dispatch(loginUser(data));
-      // navigate("/room");
+     
     } catch (error) {
       console.error("Registration error:", error);
       setLoginError(true);
-      // Show error to user (you might want to use a toast or state for this)
-      // alert(error.message || "Registration failed. Please try again.");
+      
     }
   };
   useEffect(() => {
