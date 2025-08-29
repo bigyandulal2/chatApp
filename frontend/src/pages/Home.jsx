@@ -6,6 +6,7 @@ import CTA from "../section/home/CTA";
 import Footer from "../section/home/Footer";
 import Pricing from "../section/home/Pricing";
 import About from "../section/home/About";
+import Support from "../section/home/Support";
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
 
@@ -29,6 +30,7 @@ export default function Home() {
       <Hero />
       <Features />
       <Pricing />
+      <Support/>
       <CTA />
       <About />
       <Footer />

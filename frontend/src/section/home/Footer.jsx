@@ -66,14 +66,14 @@ export default function Footer() {
             X
           </a>
           <a
-            href="https://www.linkedin.com/in/bigyan-dulal-84548b302/"
+            href="https://www.facebook.com/ananta.lawati.1?rdid=MdRrwcQBbQ6rgRYz&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F15ijNUxoGA%2F#"
             className="text-gray-400 hover:text-white transition-colors"
             target="blank"
           >
             Facebook
           </a>
           <a
-            href="https://www.linkedin.com/in/bigyan-dulal-84548b302/"
+            href="https://www.instagram.com/ananta_lawati_limbu_?igsh=eWxocnpyYTZ5c29x"
             className="text-gray-400 hover:text-white transition-colors"
             target="blank"
           >

@@ -47,10 +47,10 @@ export default function ChatRoom() {
     <div className={` ${isExpanded ? " col-span-12 md:col-span-1":"col-span-12 md:col-span-3"}  bg-gray-900 md:h-auto flex  text-white`}>
       <section className="flex-1 flex flex-col h-auto md:h-screen">
         {/* Tabs */}
-        <div className={`flex ${isExpanded && "md:flex-col h-full items-center justify-center "}  items-center border-b border-gray-700 bg-gray-800 text-sm md:text-base justify-evenly w-full`}>
-          <button className={` ${isExpanded && "items-center"}flex-1 py-3  hover:text-blue-400  ${selected==="chat" ? "border-b-2 border-blue-400 text-blue-600":"text-gray-400"} font-semibold flex`} onClick={handleChat}><IoChatboxEllipses size={30}/></button>
-          <button className={`${isExpanded && "items-center"}flex-1 py-3  hover:text-blue-400 ${selected==="people" ? "border-b-2 border-blue-400 text-blue-600":"text-gray-400"} flex justify-center text-[20px]`} onClick={handlePeople}><IoPeople size={30}/></button>
-          <button className={`${isExpanded && "items-center"}flex-1 py-3  hover:text-blue-400 ${selected==="setting" ? "border-b-2 border-blue-400 text-blue-600":"text-gray-400"} flex justify-center`} onClick={handleSetting}><IoSettingsOutline size={30}/></button>
+        <div className={`flex ${isExpanded && "md:flex-col h-full items-center justify-center "}  items-center border-b border-gray-700 bg-gray-800 text-sm md:text-base justify-evenly w-full`} id="chatsidebar-header">
+          <button className={` ${isExpanded && "items-center"}flex-1 py-3  hover:text-blue-400  ${selected==="chat" ? "border-b-2 border-blue-400 text-blue-600":"text-gray-400"} font-semibold flex`} onClick={handleChat}><IoChatboxEllipses size={30} id="chatsidebar-chat"/></button>
+          <button className={`${isExpanded && "items-center"}flex-1 py-3  hover:text-blue-400 ${selected==="people" ? "border-b-2 border-blue-400 text-blue-600":"text-gray-400"} flex justify-center text-[20px]`} onClick={handlePeople}><IoPeople size={30} id="chatsidebar-people"/></button>
+          <button className={`${isExpanded && "items-center"}flex-1 py-3  hover:text-blue-400 ${selected==="setting" ? "border-b-2 border-blue-400 text-blue-600":"text-gray-400"} flex justify-center`} onClick={handleSetting}><IoSettingsOutline size={30} id="chatsidebar-setting"/></button>
         </div>
 
         {/* Chat Messages */}

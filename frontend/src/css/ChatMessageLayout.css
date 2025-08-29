@@ -1,2 +1,21 @@
-/* screen component here design */
+/* chat sidebar header */
 
+/* #chatsidebar-header:hover::after{
+   content: "chat";
+
+} */
+
+#chatsidebar-chat:hover::after{
+   content: "chat";
+   height: 20px;
+   width: 40px;
+   background-color: white;
+
+}
+
+#chatsidebar-people{
+
+}
+#chatsidebar-setting{
+
+}

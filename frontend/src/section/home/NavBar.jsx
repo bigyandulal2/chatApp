@@ -55,7 +55,7 @@ export default function NavBar({ scrolled }) {
           Pricing
         </motion.a>
         <motion.a
-          href="#"
+          href="#support"
           className="font-medium hover:text-blue-400 transition-colors"
           whileHover={{ scale: 1.1 }}
         >
