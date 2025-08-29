@@ -98,7 +98,7 @@ export default function AvailableRoom() {
             </div>
           ))
         ) : (
-          <div className="no-rooms">No rooms available</div>
+          <div className="no-rooms text-white">No rooms available</div>
         )}
       </section>
     </>
