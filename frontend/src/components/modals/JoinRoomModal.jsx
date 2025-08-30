@@ -46,7 +46,7 @@ export default function JoinRoomModal() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+    <div className="fixed inset-0  bg-opacity-60 flex justify-center items-center z-50">
       <form
         onSubmit={handleSubmit}
         className="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md border border-gray-700"

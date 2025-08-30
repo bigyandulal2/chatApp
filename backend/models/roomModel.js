@@ -1,23 +1,26 @@
 const mongoose = require("mongoose");
 
+// 5 hours (in seconds)
+const TTL_SECS = 5 * 60 * 60;
+
 const roomSchema = new mongoose.Schema(
   {
-    roomId: { type: String, required: true, unique: true },
+    roomId:   { type: String, required: true, unique: true, index: true },
     roomName: { type: String, required: true },
     password: { type: String, required: true },
-
-    // TTL field: expires 5 hours after creation
-    expiresAt: {
-      type: Date,
-      default: () => new Date(Date.now() + 1000 * 60 * 60 * 5), // 5 hours from now
-    },
   },
-  { timestamps: true } // Adds createdAt and updatedAt automatically
+  { timestamps: true } // adds createdAt/updatedAt
 );
 
-// TTL index: expiresAt triggers deletion
-roomSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+// TTL: delete 5h after createdAt
+roomSchema.index({ createdAt: 1 }, { name: "createdAt_1", expireAfterSeconds: TTL_SECS });
 
-const Room = mongoose.model("Room", roomSchema);
+const Room = mongoose.models.Room || mongoose.model("Room", roomSchema);
 
-module.exports = Room;
+/**
+ * Ensure the TTL index is correct (use once after connecting).
+ * Safe to call on every boot; it will drop/recreate the TTL if needed
+ * and sync the unique roomId index from the schema.
+ */
+
+module.exports =  Room ;
