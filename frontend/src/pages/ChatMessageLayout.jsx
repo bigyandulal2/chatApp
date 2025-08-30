@@ -1,16 +1,16 @@
+
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import Screen from "../section/chatmessagelayout/ChatSidebar";
-import ChatSidebar from "../section/chatmessagelayout/Screen";
-import "../css/ChatMessageLayout.css";
+import Screen from "../section/chatmessagelayout/Screen";
+import ChatSidebar from "../section/chatmessagelayout/ChatSidebar";
 
 export default function ChatMessageLayout() {
-  const navigate = useNavigate();
   return (
-    <div className="grid grid-cols-12 h-[100vh] w-full relative">
-      <ChatSidebar/>
+    <div className="grid grid-cols-12 gap-0 bg-gray-900 min-h-screen">
+      {/* Main video/screen area */}
       <Screen />
-   
+
+      {/* Chat / People / Settings */}
+      <ChatSidebar />
     </div>
   );
 }

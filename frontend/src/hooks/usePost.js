@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../utils/api";
 
 export const usePost = (url, config = {}) => {
   const [response, setResponse] = useState(null);
@@ -11,8 +11,8 @@ export const usePost = (url, config = {}) => {
     setError(null);
 
     try {
-      const res = await axios.post(url, body, config);
-      setResponse(res.data);
+      const res = await api.post(url, body, config);
+      setResponse(res);
     } catch (err) {
       setError(err.response?.data?.message || err.message);
     } finally {

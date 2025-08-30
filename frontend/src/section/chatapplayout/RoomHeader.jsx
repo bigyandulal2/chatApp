@@ -24,7 +24,7 @@ export default function RoomHeader() {
 
       {/* Center - Buttons */}
       <div className="flex gap-4">
-        <button className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl shadow-md transition">
+        <button className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl shadow-md transition cursor-pointer">
           <FiPlusCircle size={20} />
           <span
             className="hidden sm:inline"
@@ -33,7 +33,7 @@ export default function RoomHeader() {
             Create Room
           </span>
         </button>
-        <button className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl shadow-md transition">
+        <button className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl shadow-md transition cursor-pointer">
           <FiLogIn size={20} />
           <span
             className="hidden sm:inline"

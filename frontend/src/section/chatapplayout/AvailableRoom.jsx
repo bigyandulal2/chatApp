@@ -1,22 +1,34 @@
+
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import CreateRoomModal from "../../components/modals/CreateRoomModal";
 import JoinRoomModal from "../../components/modals/JoinRoomModal";
+import EnterRoomPasswordModal from "../../components/modals/EnterRoomModal";
 import { useApi } from "../../hooks/useApi";
 import "../../css/AvailableRoom.css";
 import { connectSocket } from "../../redux/feature/socket/SocketActionSlicer";
 import { socket } from "../../redux/socket";
+import { usePost } from "../../hooks/usePost";
+import api from "../../utils/api";
 
 export default function AvailableRoom() {
   const createRoom = useSelector((state) => state.room.createRoom);
+  const joinRoom = useSelector((state) => state.room.joinRoom);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const joinRoom = useSelector((state) => state.room.joinRoom);
+
   const [joinedRoomId, setJoinedRoomId] = useState("");
+  const [joinTargetRoom, setJoinTargetRoom] = useState(null); // { _id, roomId, roomName }
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [passwordChecking, setPasswordChecking] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+
   const { data, loading, error, refetch } = useApi(
     "http://localhost:5000/api/rooms/allRooms"
   );
+  // const {postData,response,error:postErr,loading:postloading}=usePost(`/api/rooms/joinRoom`);
 
   useEffect(() => {
     dispatch(connectSocket());
@@ -26,45 +38,65 @@ export default function AvailableRoom() {
     refetch();
   };
 
-  // Handle successful room joining
+  // === Socket listeners for join result ===
   useEffect(() => {
-    if (!joinedRoomId) return;
-    console.log("roomhere from socket", joinedRoomId);
-    socket.emit("join-room", joinedRoomId);
-
-    socket.on("joinRoomLayout", (isJoin) => {
-      console.log("User joined room:", joinedRoomId);
-      // Navigate to the room page after successful join
-      if (isJoin) {
+    const handleJoinOk = (isJoin) => {
+      if (isJoin && joinedRoomId) {
         navigate(`/room/${joinedRoomId}`);
       }
-    });
+    };
+    const handleJoinErr = (err) => {
+      setPasswordChecking(false);
+      setPasswordError(err?.message || "Invalid password or room join failed.");
+    };
 
-    socket.on("join-error", (error) => {
-      console.error("Error joining room:", error);
-      alert(`Could not join room: ${error.message}`);
-    });
+    socket.on("joinRoomLayout", handleJoinOk);
+    socket.on("join-error", handleJoinErr);
 
-    // Clean up event listeners
     return () => {
-      socket.off("user-joined");
-      socket.off("join-error");
+      socket.off("joinRoomLayout", handleJoinOk);
+      socket.off("join-error", handleJoinErr);
     };
   }, [joinedRoomId, navigate]);
 
-  if (loading) {
-    return <div className="loading">Loading rooms...</div>;
+  if (loading) return <div className="loading">Loading rooms...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
+
+  // Click card: open password modal first
+  function handleOpenJoin(room) {
+    setJoinTargetRoom(room); // keep roomId + name for modal
+    setPasswordError("");
+    setPasswordModalOpen(true);
   }
 
-  if (error) {
-    return <div className="error">Error: {error}</div>;
-  }
+  // After user submits password in modal
+  async function handleSubmitPassword(password) {
+    console.log("password from enterROommodal is ",password);
+    if (!joinTargetRoom) return;
+    try {
+      setPasswordChecking(true);
+      setPasswordError("");
 
-  function handleRoom(room) {
-    const { roomId, roomName } = room;
-    setJoinedRoomId(roomId);
+      // If you prefer HTTP:
+      // await api.post("/api/rooms/join", { roomId: joinTargetRoom.roomId, password })
+     const res= await api.post("/api/rooms/joinRoom",{roomId:joinTargetRoom.roomId,password});
+     console.log(res.data);
 
-    // console.log("Joining room:", roomId, roomName);
+     
+
+      // Using your existing socket join:
+      const { roomId } = joinTargetRoom;
+      setJoinedRoomId(roomId);
+
+      // emit credentials
+      socket.emit("join-room", { roomId, password });
+
+      // Let socket listeners handle success/error and navigation
+    } catch (e) {
+      console.log("erorr here from eee",`${e.status}`);
+      setPasswordError(`invalid password for given room`);
+      setPasswordChecking(false);
+    }
   }
 
   return (
@@ -72,25 +104,42 @@ export default function AvailableRoom() {
       {createRoom && <CreateRoomModal onRoomCreated={handleRoomCreated} />}
       {joinRoom && <JoinRoomModal />}
 
+      {/* Password Modal */}
+      <EnterRoomPasswordModal
+        open={passwordModalOpen}
+        roomName={joinTargetRoom?.roomName || ""}
+        onClose={() => {
+          setPasswordModalOpen(false);
+          setPasswordChecking(false);
+          setPasswordError('');
+          setJoinTargetRoom(null);
+        }}
+        onSubmit={handleSubmitPassword}
+        loading={passwordChecking}
+        error={passwordError}
+      />
+
       {/* chatlist is displayed here */}
-      <section
-        className={`roomlist grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 `}
-      >
+      <section className="roomlist grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {data && data.data && data.data.length > 0 ? (
           data.data.map((room) => (
-            <div key={room._id} className="roomcard ">
+            <div key={room._id} className="roomcard">
               <div className="roomcard-header">
-                <h2>{`${room.roomName}`}</h2>
+                <h2>{room.roomName} Room</h2>
               </div>
+
               <ul className="roomcard-content grid grid-cols-3 gap-2">
-                {/* Display participants or empty slots */}
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <li key={index} className="roomcard-circle"></li>
+                {Array.from({ length: 6 }).map((_, idx) => (
+                  <li key={idx} className="roomcard-circle"></li>
                 ))}
               </ul>
-              <div className="roomcard-footer" onClick={() => handleRoom(room)}>
+
+              <div className="roomcard-footer"  onClick={() => handleOpenJoin(room)}>
                 <p className="btn-container">
-                  <button className="roomcard-btn cursor-pointer">
+                  <button
+                    className="roomcard-btn cursor-pointer"
+                  
+                  >
                     Join Room
                   </button>
                 </p>

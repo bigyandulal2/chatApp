@@ -1,85 +1,127 @@
-import React, { useEffect, useState } from "react";
+// src/components/modals/CreateRoomModal.jsx
+import React, { useState } from "react";
 import { RxCross1 } from "react-icons/rx";
-import { useDispatch, useSelector } from "react-redux";
-import { createRoom, addRoom } from "../../redux/feature/RoomActionSlicer";
-import { socket } from "../../utils/Socket";
+import { useDispatch } from "react-redux";
+import { createRoom } from "../../redux/feature/RoomActionSlicer";
+import FormMessage from "./FormMessage";
+import api from "../../utils/api"; // ✅ uses baseURL http://localhost:5000 (or VITE_API_BASE_URL)
 
-import axios from "axios";
 export default function CreateRoomModal({ onRoomCreated }) {
-  const roomList = useSelector((state) => state.room.roomList);
-
-  useEffect(() => {}, []);
   const dispatch = useDispatch();
+
+  // Derive default room name from localStorage
+  const stored = localStorage.getItem("user");
+  const defaultName = (() => {
+    try {
+      const obj = JSON.parse(stored);
+      return obj?.username || obj?.name || stored || "";
+    } catch {
+      return stored || "";
+    }
+  })();
+
   const [roomData, setRoomData] = useState({
-    roomName: "",
+    roomName: defaultName,
     roomId: "",
     password: "",
   });
+
+  const [banner, setBanner] = useState({ type: "", message: "" });
+  const [submitting, setSubmitting] = useState(false);
+
   const handleChange = (e) => {
-    setRoomData({ ...roomData, [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+    setRoomData((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Basic validation
+
+    // Basic client-side validation
     if (!roomData.roomName || !roomData.roomId || !roomData.password) {
-      alert("Please fill all fields.");
+      setBanner({ type: "error", message: "Please fill all fields." });
       return;
     }
+
     try {
-      const response = await axios.post("/api/rooms/createRoom", roomData);
-      console.log(response.data);
-      if (response.data.success) {
-        onRoomCreated();
+      setSubmitting(true);
+
+      // POST to backend (via api.js)
+      const res = await api.post("/api/rooms/createRoom", roomData);
+      const ok = Boolean(res.data?.success);
+      const msg =
+        res.data?.message || (ok ? "Room created." : "Failed to create room.");
+
+      if (ok) {
+        setBanner({ type: "success", message: msg });
+        onRoomCreated?.(); // refresh list immediately
+      
+        // Do NOT close modal here. Let toast auto-hide then close via onClose below.
+      } else {
+        setBanner({ type: "error", message: msg });
       }
-      // dispatch(createRoom(false));
-    } catch (error) {
-      const msg = error.response?.data?.message || "Something went wrong!";
-      alert(msg);
+      dispatch(createRoom(false));
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Something went wrong!";
+      setBanner({ type: "error", message: msg });
+    } finally {
+      setSubmitting(false);
     }
+  };
+
+  const handleClose = () => {
     dispatch(createRoom(false));
-
-    // dispatch(addRoom(roomData)); // Add to list
-
-    // Close modal
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
+      {/* 🔔 Auto-hide toast (3s). On success, close modal after it disappears */}
+      {banner.message && (
+        <FormMessage
+          type={banner.type}
+          message={banner.message}
+          autoHideMs={3000}
+          onClose={() => {
+            const wasSuccess = banner.type === "success";
+            setBanner({ type: "", message: "" });
+            if (wasSuccess) handleClose(); // close AFTER success toast shows
+          }}
+        />
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md border border-gray-700"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">Create a Room</h2>
-          <button type="button" onClick={() => dispatch(createRoom(false))}>
+          <button type="button" onClick={handleClose}>
             <RxCross1 className="text-white text-xl cursor-pointer" />
           </button>
         </div>
 
         <div className="space-y-4">
+          {/* Room Name (read-only per your design) */}
           <div>
-            <label
-              htmlFor="roomName"
-              className="block text-sm font-medium mb-1 text-white"
-            >
+            <label htmlFor="roomName" className="block text-sm font-medium mb-1 text-white">
               Room Name
             </label>
             <input
               type="text"
               id="roomName"
               value={roomData.roomName}
-              onChange={handleChange}
+              readOnly
               placeholder="Enter room name"
-              className="w-full px-4 py-2 rounded text-white bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+              className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
             />
           </div>
 
+          {/* Room ID */}
           <div>
-            <label
-              htmlFor="roomId"
-              className="block text-white text-sm font-medium mb-1"
-            >
+            <label htmlFor="roomId" className="block text-white text-sm font-medium mb-1">
               Room ID
             </label>
             <input
@@ -92,11 +134,9 @@ export default function CreateRoomModal({ onRoomCreated }) {
             />
           </div>
 
+          {/* Password */}
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm text-white font-medium mb-1"
-            >
+            <label htmlFor="password" className="block text-sm text-white font-medium mb-1">
               Password
             </label>
             <input
@@ -113,9 +153,10 @@ export default function CreateRoomModal({ onRoomCreated }) {
         <div className="mt-6 flex justify-center">
           <button
             type="submit"
-            className="px-6 py-2 text-white bg-indigo-500 hover:bg-indigo-600 rounded-md font-medium transition-colors"
+            disabled={submitting}
+            className="px-6 py-2 text-white bg-indigo-500 hover:bg-indigo-600 rounded-md font-medium transition-colors disabled:opacity-60"
           >
-            Create Room
+            {submitting ? "Creating..." : "Create Room"}
           </button>
         </div>
       </form>

@@ -4,11 +4,11 @@ const bcrypt = require("bcrypt");
 
 exports.registerRoom = async (req, res) => {
   const { roomName, roomId, password } = req.body;
-  const existingRoom = await Room.findOne({ roomId });
+  const existingRoom = await Room.findOne({ roomName });
   if (existingRoom) {
     return res
       .status(400)
-      .json({ success: false, message: "Room Id already exists" });
+      .json({ success: false,type:"failure", message: "Your Room already exists" });
   }
   //  hash the password
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -21,6 +21,7 @@ exports.registerRoom = async (req, res) => {
   await roomInstance.save();
   res.status(200).json({
     success: true,
+    type:"success",
     message: "successfully register",
     rooms: {
       roomName: roomInstance.roomName,
