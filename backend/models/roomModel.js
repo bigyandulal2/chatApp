@@ -6,14 +6,17 @@ const roomSchema = new mongoose.Schema(
     roomName: { type: String, required: true },
     password: { type: String, required: true },
 
-    // Mongoose will cast Date.now() to Date
-    createdAt: { type: Date, default: Date.now },
+    // TTL field: expires 5 hours after creation
+    expiresAt: {
+      type: Date,
+      default: () => new Date(Date.now() + 1000 * 60 * 60 * 5), // 5 hours from now
+    },
   },
-  { timestamps: true }
+  { timestamps: true } // Adds createdAt and updatedAt automatically
 );
 
-// TTL index: delete 5 hours (18,000 seconds) after createdAt
-roomSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 5 });
+// TTL index: expiresAt triggers deletion
+roomSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 const Room = mongoose.model("Room", roomSchema);
 
