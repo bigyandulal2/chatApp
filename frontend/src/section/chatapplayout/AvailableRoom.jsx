@@ -43,7 +43,7 @@ export default function AvailableRoom() {
     
     socket.on("joinRoomLayout", handleJoinOk);
     // socket.on("join-error", handleJoinErr);
-    socket.on("join-room",data=>{
+    socket.emit("join-room",data=>{
        console.log("from joinRoom data",data);
     })
 
