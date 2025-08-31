@@ -7,16 +7,15 @@ import JoinRoomModal from "../../components/modals/JoinRoomModal";
 import EnterRoomPasswordModal from "../../components/modals/EnterRoomModal";
 import { useApi } from "../../hooks/useApi";
 import "../../css/AvailableRoom.css";
-import { connectSocket } from "../../redux/feature/socket/SocketActionSlicer";
-import { socket } from "../../redux/socket";
+
+import { socket } from "../../utils/Socket";
 import { usePost } from "../../hooks/usePost";
 import api from "../../utils/api";
 
 export default function AvailableRoom() {
   const createRoom = useSelector((state) => state.room.createRoom);
   const joinRoom = useSelector((state) => state.room.joinRoom);
-
-  const dispatch = useDispatch();
+  const user=localStorage.getItem("user");
   const navigate = useNavigate();
 
   const [joinedRoomId, setJoinedRoomId] = useState("");
@@ -28,11 +27,7 @@ export default function AvailableRoom() {
   const { data, loading, error, refetch } = useApi(
     "http://localhost:5000/api/rooms/allRooms"
   );
-  // const {postData,response,error:postErr,loading:postloading}=usePost(`/api/rooms/joinRoom`);
-
-  useEffect(() => {
-    dispatch(connectSocket());
-  }, [dispatch]);
+  
 
   const handleRoomCreated = () => {
     refetch();
@@ -45,17 +40,18 @@ export default function AvailableRoom() {
         navigate(`/room/${joinedRoomId}`);
       }
     };
-    const handleJoinErr = (err) => {
-      setPasswordChecking(false);
-      setPasswordError(err?.message || "Invalid password or room join failed.");
-    };
-
+    
     socket.on("joinRoomLayout", handleJoinOk);
-    socket.on("join-error", handleJoinErr);
+    // socket.on("join-error", handleJoinErr);
+    socket.on("join-room",data=>{
+       console.log("from joinRoom data",data);
+    })
 
     return () => {
       socket.off("joinRoomLayout", handleJoinOk);
-      socket.off("join-error", handleJoinErr);
+      // socket.off("join-error", handleJoinErr);
+      socket.off("join-room")
+      
     };
   }, [joinedRoomId, navigate]);
 
@@ -89,7 +85,7 @@ export default function AvailableRoom() {
       setJoinedRoomId(roomId);
 
       // emit credentials
-      socket.emit("join-room", { roomId, password });
+      socket.emit("join-room", {roomId,user});
 
       // Let socket listeners handle success/error and navigation
     } catch (e) {

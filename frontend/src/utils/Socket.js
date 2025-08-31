@@ -1,10 +1,9 @@
-import { io } from "socket.io-client";
-
-const socket = io("http://localhost:5000", {
-  // Replace with your server URL
+import {io} from "socket.io-client"
+export const socket = io("http://localhost:5000", {
   autoConnect: true,
-  reconnection: true,
-  reconnectionDelay: 1000,
+  transports: ["websocket"],
 });
-
-export { socket };
+//testing for only
+export function registerUsername(username) {
+  socket.emit("register", { username });
+}

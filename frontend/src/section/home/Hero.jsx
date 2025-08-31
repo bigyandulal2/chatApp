@@ -41,7 +41,7 @@ export default function Hero() {
           transition={{ delay: 0.6 }}
         >
           {login && (
-            <motion.button>
+           
               <motion.button
                 className="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg font-medium text-lg transition-colors"
                 whileHover={{ scale: 1.05 }}
@@ -50,7 +50,7 @@ export default function Hero() {
               >
                 MyRooms
               </motion.button>
-            </motion.button>
+          
           )}
           {!login && (
             <motion.button

@@ -11,7 +11,7 @@ export const RoomActionSlicer = createSlice({
   name: "room",
   initialState,
   reducers: {
-    toggleDashboard(state, action) {
+    toggle(state, action) {
       state.dashBoardOpen = !state.dashBoardOpen;
     },
     createRoom(state, action) {
@@ -27,7 +27,7 @@ export const RoomActionSlicer = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { toggleDashboard, createRoom, joinRoom, addRoom } =
+export const { toggle, createRoom, joinRoom, addRoom } =
   RoomActionSlicer.actions;
 
 export default RoomActionSlicer.reducer;

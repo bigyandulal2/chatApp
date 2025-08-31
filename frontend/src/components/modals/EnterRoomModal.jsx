@@ -67,6 +67,7 @@ export default function EnterRoomPasswordModal({
             disabled={loading || !password}
           >
             {loading ? "Checking…" : "Join Room"}
+           
           </button>
         </div>
       </div>
