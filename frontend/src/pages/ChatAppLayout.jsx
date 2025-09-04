@@ -1,9 +1,9 @@
 import React from "react";
-import { useProfile } from "../hooks/useProfile";
+
 import AvailableRoom from "../section/chatapplayout/AvailableRoom";
 import RoomHeader from "../section/chatapplayout/RoomHeader";
 export default function ChatAppLayout() {
-  const { user, loading, error } = useProfile();
+  
 
   // console.log("user detail", user);
   return (

@@ -40,14 +40,21 @@ app.get("/", (req, res) => {
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  socket.on("join-room", (roomId) => {
+  socket.on("join-room", ({roomId,user}) => {
     socket.join(roomId);
     console.log(`Socket ${socket.id} joined room ${roomId}`);
     socket.emit("joinRoomLayout", true);
     // Notify others in the room
-    socket.to(roomId).emit("user-joined", socket.id);
+    console.log("userrrrrrrr",user);
+    socket.to(roomId).emit("user-joined", user);
   });
-
+  socket.on("send-messages",({roomId,user,text})=>{
+       console.log("userrrr",roomId,user,text);
+       socket.to(roomId).emit("received-messages",{user,text})
+  })
+ socket.on("onmike",data=>{
+   console.log("on mike=",data);
+ })
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });

@@ -13,6 +13,7 @@ const DEFAULT_MESSAGES = [
 
 export default function ChatSidebar() {
   const {id}=useParams();
+  console.log("id here",id);
   const isExpanded = useSelector((state) => state.uistate.isExpanded);
   const dispatch = useDispatch();
   useEffect(()=>{
@@ -31,10 +32,12 @@ export default function ChatSidebar() {
   console.log(messages);
   // Socket (example listeners)
   useEffect(() => {
+    console.log("i have been called here mannnnn");
     const onUserJoined = (data) => {
+      console.log("hello here userJoined",data);
       setMessages(prev => [
         ...prev,
-        { id: uuidv4(), sender: "System", text: `${data.user} joined` }
+        { id: uuidv4(), sender: "System", text: `${data} joined` }
       ]);
     };
   
@@ -47,11 +50,11 @@ export default function ChatSidebar() {
     };
    socket.emit("join-room",{roomId:id,user:user});
     socket.on("user-joined", onUserJoined);
-    socket.on("received-message", onReceive);
+    socket.on("received-messages", onReceive);
   
     return () => {
       socket.off("user-joined", onUserJoined);
-      socket.off("received-message", onReceive); // ✅ fixed!
+      socket.off("received-messages", onReceive); // ✅ fixed!
     };
   }, []);
   
@@ -60,9 +63,7 @@ export default function ChatSidebar() {
   const handleSend = () => {
     if (!input.trim()) return;
     setMessages((m) => [...m, { id: Date.now(), sender: "you", text: input }]);
-    socket.emit("send-messages",{
-     roomId:id, user:user,text:input
-    })
+     socket.emit("send-messages",{roomId:id,user,text:input});
     setInput("");
   };
 
