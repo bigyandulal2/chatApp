@@ -8,7 +8,16 @@ function JoinRooms(io, socket) {
     socket.join(roomId);
     console.log(`Socket ${socket.id} joined room ${roomId}`);
     socket.emit("joinRoomLayout", true);
-
+    // Listen for "newRoom-added" event from any client
+    socket.on("newRoom-added", (roomData) => {
+      console.log("New room added:", roomData);
+  
+      // Broadcast to ALL clients EXCEPT sender
+      socket.broadcast.emit("newRoom-added", roomData);
+  
+      // Or emit to everyone including sender (io.emit)
+      // io.emit("newRoom-added", roomData);
+    });
     // Add user to tracking
     if (!usersInRoom[roomId]) {
       usersInRoom[roomId] = [];

@@ -54,7 +54,10 @@ export default function CreateRoomModal({ onRoomCreated }) {
 
       if (ok) {
         setBanner({ type: "success", message: msg });
-        onRoomCreated?.(); // refresh list immediately
+        //onRoomCreated?.();
+        onRoomCreated?.();
+        socket.emit("newRoom-added","wow");
+        // refresh list immediately
       
         // Do NOT close modal here. Let toast auto-hide then close via onClose below.
       } else {

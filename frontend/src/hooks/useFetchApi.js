@@ -6,28 +6,35 @@ export const useFetchApi = (url, method = "GET") => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // console.log("data from hoook", data);
-  const fetchData = useCallback(
-    async (bodyData = null) => {
-      setLoading(true);
-      setError(null);
+  // Modify your fetchData in useFetchApi.js
+const fetchData = useCallback(
+  async (bodyData = null) => {
+    setLoading(true);
+    setError(null);
 
-      try {
-        const response = await api.get({
+    try {
+      let response;
+
+      if (method.toUpperCase() === "GET") {
+        response = await api.get(url); // ✅ correct usage
+      } else {
+        response = await api({
           url,
           method,
-
           data: bodyData,
         });
-
-        setData(response.data);
-      } catch (err) {
-        setError(err.response?.data?.message || err.message);
-      } finally {
-        setLoading(false);
       }
-    },
-    [url, method]
-  );
+
+      setData(response.data);
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+    } finally {
+      setLoading(false);
+    }
+  },
+  [url, method]
+);
+
 
   useEffect(() => {
     if (method.toUpperCase() === "GET") {

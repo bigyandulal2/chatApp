@@ -5,6 +5,7 @@ const initialState = {
   createRoom: false,
   joinRoom: false,
   roomList: [],
+  
 };
 
 export const RoomActionSlicer = createSlice({

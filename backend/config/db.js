@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 const ensureRoomIndexes = require("../controllers/ensureRoomIndexes");
+const api= `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.n0qqfge.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+    const conn = await mongoose.connect(api, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });

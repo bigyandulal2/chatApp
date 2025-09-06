@@ -9,7 +9,7 @@ import { useApi } from "../../hooks/useApi";
 import "../../css/AvailableRoom.css";
 
 import { socket } from "../../utils/Socket";
-import { usePost } from "../../hooks/usePost";
+import {useFetchApi} from "../../hooks/useFetchApi"
 import api from "../../utils/api";
 
 export default function AvailableRoom() {
@@ -24,10 +24,11 @@ export default function AvailableRoom() {
   const [passwordChecking, setPasswordChecking] = useState(false);
   const [passwordError, setPasswordError] = useState("");
 
-  const { data, loading, error, refetch } = useApi(
-    "http://localhost:5000/api/rooms/allRooms"
-  );
-  
+
+  // const { data, loading, error, refetch } = useApi(
+  //   "http://localhost:5000/api/rooms/allRooms"
+  // );
+  const {data,loading,error,refetch}=useFetchApi("/api/rooms/allRooms");
 
   const handleRoomCreated = () => {
     refetch();
@@ -38,22 +39,28 @@ export default function AvailableRoom() {
     const handleJoinOk = (isJoin) => {
       if (isJoin && joinedRoomId) {
         navigate(`/room/${joinedRoomId}`);
+        
       }
     };
+    const handleNewRoom=()=>{
+      refetch();
+    }
     
     socket.on("joinRoomLayout", handleJoinOk);
     // socket.on("join-error", handleJoinErr);
     socket.emit("join-room",data=>{
        console.log("from joinRoom data",data);
     })
+    socket.on("newRoom-added",handleNewRoom)
 
     return () => {
       socket.off("joinRoomLayout", handleJoinOk);
       // socket.off("join-error", handleJoinErr);
-      socket.off("join-room")
+      socket.off("join-room");
+      socket.off("newRoom-added");
       
     };
-  }, [joinedRoomId, navigate]);
+  }, [joinedRoomId, navigate,refetch]);
 
   if (loading) return <div className="loading">Loading rooms...</div>;
   if (error) return <div className="error">Error: {error}</div>;
