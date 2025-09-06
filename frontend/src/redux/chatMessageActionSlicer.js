@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  messages:[]
+  messages:[],
+  imgFile:null
 };
 
 export const ChatActionSlicer = createSlice({

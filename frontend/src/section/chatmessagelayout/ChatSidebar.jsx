@@ -6,6 +6,7 @@ import DesktopSidebar from "./DesktopSidebar";
 import MobileSheet from "./MobileSheet";
 import {useParams} from "react-router-dom"
 import {v4 as uuidv4} from "uuid"
+import { setupFileReceiver } from "../../utils/receiveFile";
 const DEFAULT_MESSAGES = [
   // { id: 1, sender: "User1", text: "Hello everyone!" },
   // { id: 2, sender: "You", text: "Hi! 👋" },
@@ -16,53 +17,30 @@ export default function ChatSidebar() {
   console.log("id here",id);
   const isExpanded = useSelector((state) => state.uistate.isExpanded);
   const dispatch = useDispatch();
-  useEffect(()=>{
-
-  },[])
+ 
 
   // Tabs
   const [selected, setSelected] = useState("chat"); // "chat" | "people" | "setting"
+//useEffect her
+
+
+
 
   // Chat state
   const [messages, setMessages] = useState(DEFAULT_MESSAGES);
   const [input, setInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const user=localStorage.getItem("user");
+  const user = useMemo(() => localStorage.getItem("user"), []);
+
   console.log(messages);
-  // Socket (example listeners)
-  useEffect(() => {
-    console.log("i have been called here mannnnn");
-    const onUserJoined = (data) => {
-      console.log("hello here userJoined",data);
-      setMessages(prev => [
-        ...prev,
-        { id: uuidv4(), sender: "System", text: `${data} joined` }
-      ]);
-    };
-  
-    const onReceive = (data) => {
-      console.log("received message has been called",data);
-      setMessages(prev => [
-        ...prev,
-        { id: uuidv4(), sender: data.user, text: data.text }
-      ]);
-    };
-   socket.emit("join-room",{roomId:id,user:user});
-    socket.on("user-joined", onUserJoined);
-    socket.on("received-messages", onReceive);
-  
-    return () => {
-      socket.off("user-joined", onUserJoined);
-      socket.off("received-messages", onReceive); // ✅ fixed!
-    };
-  }, []);
+
   
 
   // Actions
   const handleSend = () => {
     if (!input.trim()) return;
-    setMessages((m) => [...m, { id: Date.now(), sender: "you", text: input }]);
+    if(input==messages.text) return; 
      socket.emit("send-messages",{roomId:id,user,text:input});
     setInput("");
   };
@@ -93,6 +71,34 @@ export default function ChatSidebar() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+  useEffect(() => {
+    if (!id || !user) return;
+  
+    console.log("Joining room:", id);
+    socket.emit("join-room", { roomId: id, user });
+  
+    const onUserJoined = (data) => {
+      setMessages((prev) => [
+        ...prev,
+        { id: uuidv4(), sender: "System", text: `${data} joined` }
+      ]);
+    };
+  
+    const onReceive = (data) => {
+      setMessages((prev) => [
+        ...prev,
+        { id: uuidv4(), sender: data.user, text: data.text }
+      ]);
+    };
+  
+    socket.on("user-joined", onUserJoined);
+    socket.on("received-messages", onReceive);
+  
+    return () => {
+      socket.off("user-joined", onUserJoined);
+      socket.off("received-messages", onReceive);
+    };
+  }, [id, user]);
 
   const sheetHeights = useMemo(() => {
     const sheetH = Math.round(vh * 0.85);

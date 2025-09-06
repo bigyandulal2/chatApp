@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  login: !!localStorage.getItem("login"), // Set initial state based on localStorage
+  login: !!localStorage.getItem("login"),
+  user:localStorage.getItem("user")
+  // Set initial state based on localStorage
 };
 
 export const LoginActionSlicer = createSlice({
