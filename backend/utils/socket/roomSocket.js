@@ -1,19 +1,10 @@
-// const usersInRoom = {};
-// module.exports = (io, socket) => {
-//     socket.on("join-room", ({ roomId, user }) => {
-//       socket.join(roomId);
-//       console.log(`Socket ${socket.id} joined room ${roomId}`);
-//       socket.emit("joinRoomLayout", true);
-  
-//       // Notify others in the room
-//       console.log("User joined:", user);
-//       socket.to(roomId).emit("user-joined", user);
-//     });
-//   };
-const usersInRoom = {};
 
-module.exports = (io, socket) => {
-  socket.on("join-room", ({ roomId, user }) => {
+const usersInRoom = {};
+function Users(io,socket){
+    return usersInRoom;
+}
+function JoinRooms(io, socket) {
+  socket.on("join-room", ({ roomId, user,userId }) => {
     socket.join(roomId);
     console.log(`Socket ${socket.id} joined room ${roomId}`);
     socket.emit("joinRoomLayout", true);
@@ -25,14 +16,15 @@ module.exports = (io, socket) => {
 
     // Avoid duplicate user entries (in case of reconnects)
     const alreadyInRoom = usersInRoom[roomId].some(
-      (u) => u.userId === user.id
+      (u) => u.userId === userId
     );
 
     if (!alreadyInRoom) {
       usersInRoom[roomId].push({
         socketId: socket.id,
-        userId: user.id,
-        name: user.name,
+        userId: userId,
+        name: user,
+        roomId:roomId
       });
     }
 
@@ -60,3 +52,4 @@ module.exports = (io, socket) => {
     }
   });
 };
+module.exports={Users,JoinRooms}

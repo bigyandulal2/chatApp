@@ -14,16 +14,19 @@ const DEFAULT_MESSAGES = [
 
 export default function ChatSidebar() {
   const {id}=useParams();
-  console.log("id here",id);
+  // console.log("id here",id);
   const isExpanded = useSelector((state) => state.uistate.isExpanded);
+  const userId=useSelector((state)=>state.login.userId);
+  const usersInRoom=useSelector((state)=>state.chat.usersInRoom);
  
   const dispatch = useDispatch();
  
 
   // Tabs
   const [selected, setSelected] = useState("chat"); // "chat" | "people" | "setting"
-//useEffect her
-
+//recipient
+const recipient=useSelector((state)=>state.chat.recipient);
+// console.log("recipient, chatsidebarrr",recipient);
 
 
 
@@ -34,16 +37,31 @@ export default function ChatSidebar() {
    const user=useSelector((state)=>state.login.user);
   //  const [emojiInput, setEmojiInput] = useState("");
 
-  console.log(messages);
+  // console.log(messages);
 
   
 
   // Actions
   const handleSend = () => {
     if (!input.trim()) return;
-   
-    if(input===messages.text) return; 
-     socket.emit("send-messages",{roomId:id,user,text:input});
+    if(recipient==="everyone"){
+        socket.emit("send-messages",{roomId:id,user,text:input});
+    }
+    else{
+      console.log("userrrrrrrrrrrrrrsroom",usersInRoom);
+      const targetUser = usersInRoom.find(u => u.name === recipient);
+      console.log("target userrrrrrrrrrrrrrrrrrrrrrrr",targetUser);
+      // console.log(targetUser);
+      console.log("hllo from the private-message hereeeeeeeeeeeeeeeeeeee");
+     socket.emit("private-message",{
+      roomId:id,
+      from: user,//username
+      to: targetUser.userId,  // 👈 this is a userId (e.g. "user123")
+      text: input,
+     })
+    }
+
+    
     setInput("");
   
   };
@@ -77,8 +95,8 @@ export default function ChatSidebar() {
   useEffect(() => {
     if (!id || !user) return;
   
-    console.log("Joining room:", id);
-    socket.emit("join-room", { roomId: id, user });
+    // console.log("Joining room:", id);
+    socket.emit("join-room", { roomId: id, user,userId });
   
     const onUserJoined = (data) => {
       setMessages((prev) => [
@@ -93,13 +111,33 @@ export default function ChatSidebar() {
         { id: uuidv4(), sender: data.user, text: data.text,fileType:data?.fileType,fileData:data?.fileData }
       ]);
     };
+    const onPrivate=(data)=>{
+      console.log("i have been calledddddddddddddddddd");
+       console.log("from private mssage ",data);
+       setMessages((prev) => [
+        ...prev,
+        {
+          id: uuidv4(),
+          sender: data.sender,
+          text: data.message || `[File] ${data.fileName}`,
+          fileType: data.fileType,
+          fileData: data.fileData,
+          type: data.type,
+          timestamp: data.timestamp,
+          to:data.to
+        },
+      ]);
+
+    }
   
     socket.on("user-joined", onUserJoined);
     socket.on("received-messages", onReceive);
+    socket.on("new-private-message",onPrivate)
   
     return () => {
       socket.off("user-joined", onUserJoined);
       socket.off("received-messages", onReceive);
+      socket.off("new-private-message",onPrivate);
     };
   }, [id, user]);
 
@@ -129,26 +167,8 @@ export default function ChatSidebar() {
           messages={messages}
           input={input}
           setInput={setInput}
-         onSend={(recipient) => {
-              if (!input.trim()) return;
-          
-              if (recipient === "everyone") {
-                socket.emit("public-message", {
-                  text: input,
-                  roomId,
-                  sender: user,
-                });
-              } else {
-                socket.emit("private-message", {
-                  text: input,
-                  to: recipient, // recipient user ID
-                  from: user.id,
-                  senderName: user.name,
-                });
-              }
-          
-              setInput(""); // Clear input
-            }}
+        
+        onSend={handleSend}
           
         />
       </div>

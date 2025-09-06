@@ -6,7 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { sendFile } from "../../utils/sendFile";
 import IconPicker from "../../components/IconPicker";
-import MessageRecipientSelector from "../../components/MessageRecipientSelector"
+import MessageRecipientSelector from "../../components/MessageRecipientSelector";
+import { setRecipient } from "../../redux/chatMessageActionSlicer";
 export default function Composer({
   input,
   setInput,
@@ -15,8 +16,9 @@ export default function Composer({
 }) {
   const user = useSelector((state) => state.login.user);
   const [showIconPicker, setShowIconPicker] = useState(false);
-  const [usersInRoom,setUsersInRoom]=useState([]);
-  const [recipient,setRecipient]=useState("everyone");
+  // const [usersInRoom,setUsersInRoom]=useState([]);
+  const recipient=useSelector((state)=>state.chat.recipient)
+  // const [recipient,setRecipient]=useState("everyone");
   const { id } = useParams();
   const fileInputRef = useRef(null);
   const dispatch=useDispatch();
@@ -39,7 +41,7 @@ export default function Composer({
   return (
     <footer className="bg-gray-900 p-3 flex items-center justify-center border-t border-gray-800">
       <div className="w-full max-w-2xl">
-      <MessageRecipientSelector usersInRoom={usersInRoom} setRecipient={setRecipient} recipient={recipient} setUsersInRoom={setUsersInRoom} />
+      <MessageRecipientSelector/>
           <div className="flex  items-center bg-gray-800 border border-gray-700 rounded-full px-3 py-2">
           <FileButton handleFileChange={handleFileChange} fileInputRef={fileInputRef} />
             {/* icons here */}

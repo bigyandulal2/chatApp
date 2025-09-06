@@ -1,12 +1,12 @@
 const chatSocket = require("./chatSocket");
-const roomSocket = require("./roomSocket");
+const {JoinRooms} = require("./roomSocket");
 const mikeSocket = require("./mikeSocket");
 
 module.exports = (io,socket) => {
     console.log("User connected:", socket.id);
     // Load all socket handlers
     chatSocket(io, socket);
-    roomSocket(io, socket);
+    JoinRooms(io, socket);
     mikeSocket(io, socket);
 
     socket.on("disconnect", () => {

@@ -1,24 +1,30 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  messages:[],
- 
-  
+  messages: [],
+  recipient: "everyone",
+  userId:localStorage.getItem("userId"),
+  usersInRoom:[]
 };
 
-export const ChatActionSlicer = createSlice({
+export const ChatMessageActionSlicer = createSlice({
   name: "chat",
   initialState,
   reducers: {
-     sendMessage:(state,action)=>{
-       state.messages.push(action.payload);
-     },
-   
+    sendMessage: (state, action) => {
+      state.messages.push(action.payload);
+    },
+    setRecipient: (state, action) => {
+      state.recipient = action.payload;
+    },
+    setUsersInRoom:(state,action)=>{
+      state.usersInRoom=action.payload;
+    }
   },
 });
 
-// Action creators are generated for each case reducer function
-export const { sendMessage} =
-  ChatActionSlicer.actions;
+// ✅ Export actions
+export const { sendMessage, setRecipient,setUsersInRoom } = ChatMessageActionSlicer.actions;
 
-export default ChatActionSlicer.reducer;
+// ✅ Export reducer
+export default ChatMessageActionSlicer.reducer;
