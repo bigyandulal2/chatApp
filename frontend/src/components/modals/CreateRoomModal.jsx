@@ -56,6 +56,7 @@ export default function CreateRoomModal({ onRoomCreated }) {
         setBanner({ type: "success", message: msg });
         //onRoomCreated?.();
         onRoomCreated?.();
+        dispatch(createRoom(false));
         socket.emit("newRoom-added","wow");
         // refresh list immediately
       
@@ -63,7 +64,7 @@ export default function CreateRoomModal({ onRoomCreated }) {
       } else {
         setBanner({ type: "error", message: msg });
       }
-      dispatch(createRoom(false));
+    
     } catch (err) {
       const msg =
         err?.response?.data?.message ||
