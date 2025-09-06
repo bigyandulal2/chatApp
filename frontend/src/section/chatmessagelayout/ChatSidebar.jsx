@@ -31,7 +31,7 @@ export default function ChatSidebar() {
   const [input, setInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const user = useMemo(() => localStorage.getItem("user"), []);
+   const user=useSelector((state)=>state.login.user);
 
   console.log(messages);
 
@@ -87,7 +87,7 @@ export default function ChatSidebar() {
     const onReceive = (data) => {
       setMessages((prev) => [
         ...prev,
-        { id: uuidv4(), sender: data.user, text: data.text }
+        { id: uuidv4(), sender: data.user, text: data.text,fileType:data?.fileType,fileData:data?.fileData }
       ]);
     };
   

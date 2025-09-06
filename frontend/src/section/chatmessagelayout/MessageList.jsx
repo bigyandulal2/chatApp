@@ -45,7 +45,7 @@ export default function MessageList({ messages }) {
             <img
               src={`data:${m.fileType};base64,${m.fileData}`}
               alt={m.fileName}
-              className="max-w-xs rounded-lg shadow-md border border-gray-700"
+              className="max-w-[100px] rounded-lg shadow-md border border-gray-700"
             />
           )}
 
