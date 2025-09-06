@@ -6,7 +6,7 @@ import DesktopSidebar from "./DesktopSidebar";
 import MobileSheet from "./MobileSheet";
 import {useParams} from "react-router-dom"
 import {v4 as uuidv4} from "uuid"
-import { setupFileReceiver } from "../../utils/receiveFile";
+
 const DEFAULT_MESSAGES = [
   // { id: 1, sender: "User1", text: "Hello everyone!" },
   // { id: 2, sender: "You", text: "Hi! 👋" },
@@ -16,6 +16,7 @@ export default function ChatSidebar() {
   const {id}=useParams();
   console.log("id here",id);
   const isExpanded = useSelector((state) => state.uistate.isExpanded);
+ 
   const dispatch = useDispatch();
  
 
@@ -32,6 +33,7 @@ export default function ChatSidebar() {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
    const user=useSelector((state)=>state.login.user);
+  //  const [emojiInput, setEmojiInput] = useState("");
 
   console.log(messages);
 
@@ -40,9 +42,11 @@ export default function ChatSidebar() {
   // Actions
   const handleSend = () => {
     if (!input.trim()) return;
-    if(input==messages.text) return; 
+   
+    if(input===messages.text) return; 
      socket.emit("send-messages",{roomId:id,user,text:input});
     setInput("");
+  
   };
 
   const handleChat = () => {

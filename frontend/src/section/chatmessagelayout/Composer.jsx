@@ -1,11 +1,11 @@
 
-import React, { useRef } from "react";
+import React, { useRef,useState } from "react";
 import { HiOutlinePlus, HiOutlineEmojiHappy } from "react-icons/hi";
 import { FaMicrophone, FaPaperPlane, FaPause, FaTrash } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { sendFile } from "../../utils/sendFile";
-
+import IconPicker from "../../components/IconPicker";
 export default function Composer({
   input,
   setInput,
@@ -17,8 +17,11 @@ export default function Composer({
   onSendRecording, // new prop to handle sending recorded audio
 }) {
   const user = useSelector((state) => state.login.user);
+  const [showIconPicker, setShowIconPicker] = useState(false);
+
   const { id } = useParams();
   const fileInputRef = useRef(null);
+  const dispatch=useDispatch();
 
   const handleFileChange = (e) => {
     if (e.target.files.length > 0) {
@@ -34,6 +37,12 @@ export default function Composer({
       setIsPaused(false);
     }
   };
+  const handleIconSelect = (icon) => {
+    console.log(icon);
+    setInput(prev=>prev+icon)
+    setShowIconPicker(false);
+  };
+  
 
   return (
     <footer className="bg-gray-900 p-3 flex items-center justify-center border-t border-gray-800">
@@ -53,14 +62,28 @@ export default function Composer({
             >
               <HiOutlinePlus size={20} />
             </label>
+            {/* icons here */}
+             <div className="relative"> 
+             <button
+     type="button"
+    onClick={() => setShowIconPicker(!showIconPicker)}
+    className="mr-2 text-gray-200 hover:bg-gray-700 rounded-full p-2"
+    aria-label="Emoji picker"
+  >
+    <HiOutlineEmojiHappy size={20} />
+  </button> 
+  {showIconPicker && (
+    <IconPicker
+      onSelect={handleIconSelect}
+      onClose={() => setShowIconPicker(false)}
+    />
+  )}
+  </div>
 
-            <button
-              type="button"
-              className="mr-2 text-gray-200 hover:bg-gray-700 rounded-full p-2"
-              aria-label="Emoji picker (not implemented)"
-            >
-              <HiOutlineEmojiHappy size={20} />
-            </button>
+
+  
+  {/* show icon picker */}
+ 
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}

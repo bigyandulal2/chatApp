@@ -18,7 +18,7 @@ export default function ImagePreviewer({ imageSrc, onClose }) {
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center">
+    <div className="fixed inset-0 z-50  bg-opacity-80 flex items-center justify-center">
       <div ref={modalRef} className="relative">
         {/* Close Icon */}
         <button

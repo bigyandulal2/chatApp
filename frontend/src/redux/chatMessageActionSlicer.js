@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   messages:[],
-  imgFile:null
+
+  
 };
 
 export const ChatActionSlicer = createSlice({
@@ -11,12 +12,13 @@ export const ChatActionSlicer = createSlice({
   reducers: {
      sendMessage:(state,action)=>{
        state.messages.push(action.payload);
-     }
+     },
+   
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { sendMessage } =
+export const { sendMessage} =
   ChatActionSlicer.actions;
 
 export default ChatActionSlicer.reducer;
