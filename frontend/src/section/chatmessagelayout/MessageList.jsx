@@ -2,8 +2,11 @@
 import React, { useEffect, useRef,useState } from "react";
 import { useSelector } from "react-redux";
 import ImagePreviewer from "../../components/ImagePreviewer";
+
 export default function MessageList({ messages }) {
   const user=useSelector((state)=>state.login.user);
+
+
   const scrollRef = useRef(null);
   const [previewImage, setPreviewImage] = useState(null);
   useEffect(() => {
@@ -26,13 +29,14 @@ export default function MessageList({ messages }) {
           }`}
         >
           {/* Sender */}
-          <span
+          <div
             className={`block font-bold text-sm mb-1 ${
               m.sender === `${user}` ? "text-blue-400" : "text-orange-300"
             }`}
           >
-            {m.sender}
-          </span>
+            {m.sender} 
+           
+          </div>
 
           {/* Text */}
           {m.text && (

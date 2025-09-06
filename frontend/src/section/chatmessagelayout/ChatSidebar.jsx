@@ -30,8 +30,7 @@ export default function ChatSidebar() {
   // Chat state
   const [messages, setMessages] = useState(DEFAULT_MESSAGES);
   const [input, setInput] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
+
    const user=useSelector((state)=>state.login.user);
   //  const [emojiInput, setEmojiInput] = useState("");
 
@@ -130,11 +129,27 @@ export default function ChatSidebar() {
           messages={messages}
           input={input}
           setInput={setInput}
-          isRecording={isRecording}
-          setIsRecording={setIsRecording}
-          isPaused={isPaused}
-          setIsPaused={setIsPaused}
-          onSend={handleSend}
+         onSend={(recipient) => {
+              if (!input.trim()) return;
+          
+              if (recipient === "everyone") {
+                socket.emit("public-message", {
+                  text: input,
+                  roomId,
+                  sender: user,
+                });
+              } else {
+                socket.emit("private-message", {
+                  text: input,
+                  to: recipient, // recipient user ID
+                  from: user.id,
+                  senderName: user.name,
+                });
+              }
+          
+              setInput(""); // Clear input
+            }}
+          
         />
       </div>
 
@@ -147,10 +162,6 @@ export default function ChatSidebar() {
           messages={messages}
           input={input}
           setInput={setInput}
-          isRecording={isRecording}
-          setIsRecording={setIsRecording}
-          isPaused={isPaused}
-          setIsPaused={setIsPaused}
           onSend={handleSend}
         />
       </div>

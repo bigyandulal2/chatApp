@@ -16,10 +16,7 @@ export default function DesktopSidebar({
   messages,
   input,
   setInput,
-  isRecording,
-  setIsRecording,
-  isPaused,
-  setIsPaused,
+ 
   onSend,
 }) {
   return (
@@ -35,10 +32,6 @@ export default function DesktopSidebar({
               <Composer
                 input={input}
                 setInput={setInput}
-                isRecording={isRecording}
-                setIsRecording={setIsRecording}
-                isPaused={isPaused}
-                setIsPaused={setIsPaused}
                 onSend={onSend}
               />
             </>
