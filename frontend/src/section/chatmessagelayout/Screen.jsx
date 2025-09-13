@@ -22,8 +22,9 @@ export default function Screen() {
   const myId = localStorage.getItem("userId");
 
   const call = useCall();
-  const { useLocalParticipant } = useCallStateHooks();
+  const { useLocalParticipant, useParticipants } = useCallStateHooks();
   const localParticipant = useLocalParticipant();
+  const participants = useParticipants();
 
   const [isMicOn, setIsMicOn] = useState(true);
   const [isVideoOn, setIsVideoOn] = useState(true);
@@ -77,9 +78,7 @@ export default function Screen() {
   return (
     <div
       className={`${
-        isExpanded
-          ? "col-span-12 md:col-span-11"
-          : "col-span-12 md:col-span-9"
+        isExpanded ? "col-span-12 md:col-span-11" : "col-span-12 md:col-span-9"
       } bg-gray-900 flex flex-col justify-between md:block relative`}
     >
       <aside className="pt-2">
@@ -128,18 +127,33 @@ export default function Screen() {
           </div>
         </div>
 
-        {/* Video Section */}
-        <div className="w-full px-3 h-[50vh] lg:h-[60vh]">
-          {isVideoOn && localParticipant ? (
-            <ParticipantView
-              participant={localParticipant}
-              className="h-full w-full rounded-lg object-cover"
-            />
+        {/* Video Section (local + remote participants) */}
+        <div className="w-full px-3 h-[30vh] lg:h-[60vh] grid grid-cols-2 gap-2">
+          {/* Local participant */}
+          {localParticipant ? (
+            <div className="rounded-lg overflow-hidden">
+              <ParticipantView
+                participant={localParticipant}
+                className="w-full h-full object-cover rounded-lg"
+              />
+            </div>
           ) : (
-            <div className="bg-gray-800 h-full object-cover flex items-center justify-center rounded-lg text-gray-400">
-              Video Off
+            <div className="bg-gray-800 h-full flex items-center justify-center rounded-lg text-gray-400">
+              Local Video Off
             </div>
           )}
+
+          {/* Remote participants (filter out local participant) */}
+          {participants
+            .filter((participant) => participant.id !== localParticipant?.id)
+            .map((participant) => (
+              <div key={participant.id} className="rounded-lg overflow-hidden">
+                <ParticipantView
+                  participant={participant}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+            ))}
         </div>
 
         {/* User Tile */}
