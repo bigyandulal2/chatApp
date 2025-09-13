@@ -14,7 +14,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", 
+    origin: "*", 
     methods: ["GET", "POST"],
   },
 });
@@ -24,7 +24,8 @@ const io = new Server(server, {
 // ====================
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "*",
+    methods:["GET","POST"],
     credentials: true,
   })
 );
@@ -55,6 +56,12 @@ app.post("/api/token", (req, res) => {
 
   res.json({ token });
 });
+app.get("/api/hero",(req,res)=>{
+   return res.status(200).json({
+    message:"wow",
+    data:"yesyes"
+   })
+})
 app.use("/api/users", userRoutes);
 app.use("/api/rooms", roomRoutes);
 

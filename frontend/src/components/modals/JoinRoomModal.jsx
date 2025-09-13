@@ -39,7 +39,7 @@ export default function JoinRoomModal() {
     try {
       setSubmitting(true);
 
-      const response = await api.post("/api/rooms/joinRoom", roomData);
+      const response = await api.post("/rooms/joinRoom", roomData);
       if (!response?.data?.success) {
         throw new Error(response?.data?.message || "Room ID and password do not match.");
       }

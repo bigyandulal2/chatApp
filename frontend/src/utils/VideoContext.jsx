@@ -23,7 +23,7 @@ export default function VideoProvider({ children }) {
           return;
         }
 
-        const res = await api.post("/api/token", { userId });
+        const res = await api.post("/token", { userId });
         const token = res.data.token;
 
         const apiKey = import.meta.env.VITE_CHAT_API;

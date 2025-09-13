@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 
 exports.registerRoom = async (req, res) => {
   const { roomName, roomId, password } = req.body;
+  console.log("roommmmmmmm has been registeredddddddddddddddd");
   const existingRoom = await Room.findOne({ roomName });
   if (existingRoom) {
     return res
@@ -55,16 +56,16 @@ exports.joinRoom = async (req, res) => {
   });
 };
 exports.allRooms = async (req, res) => {
-  console.log("all room has been here hitted!");
+  console.log("all room has been here hitted!asa");
   const rooms = await Room.find({}, "roomId roomName");
   if (!rooms) {
     return res.status(404).json({
       message: "room not found",
       success: false,
     });
-  }
+  }     
   console.log(rooms);
-  res.status(200).json({
+ return  res.status(200).json({
     message: "room successfully found here",
     success: true,
     count: rooms.length,

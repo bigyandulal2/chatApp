@@ -4,11 +4,13 @@ import { RxCross1 } from "react-icons/rx";
 import { useDispatch } from "react-redux";
 import { createRoom } from "../../redux/feature/RoomActionSlicer";
 import FormMessage from "./FormMessage";
-import api from "../../utils/api"; // ✅ uses baseURL http://localhost:5000 (or VITE_API_BASE_URL)
+import api from "../../utils/api"; 
+import { socket } from "../../utils/Socket";
+import { addRoom } from "../../redux/feature/RoomActionSlicer";
 
 export default function CreateRoomModal({ onRoomCreated }) {
   const dispatch = useDispatch();
-
+  
   // Derive default room name from localStorage
   const stored = localStorage.getItem("user");
   const defaultName = (() => {
@@ -47,7 +49,7 @@ export default function CreateRoomModal({ onRoomCreated }) {
       setSubmitting(true);
 
       // POST to backend (via api.js)
-      const res = await api.post("/api/rooms/createRoom", roomData);
+      const res = await api.post("/rooms/createRoom", roomData);
       const ok = Boolean(res.data?.success);
       const msg =
         res.data?.message || (ok ? "Room created." : "Failed to create room.");
@@ -57,6 +59,7 @@ export default function CreateRoomModal({ onRoomCreated }) {
         //onRoomCreated?.();
         onRoomCreated?.();
         dispatch(createRoom(false));
+        dispatch(addRoom(res.data.rooms))
         socket.emit("newRoom-added","wow");
         // refresh list immediately
       

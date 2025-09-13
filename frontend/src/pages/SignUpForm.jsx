@@ -9,6 +9,7 @@ import SignUpFooter from "../section/signupform/SignUpFooter";
 import { useSelector, useDispatch } from "react-redux";
 import { loginUser } from "../redux/feature/LoginActionSlicer";
 import { useNavigate } from "react-router-dom";
+import api from "../utils/api"
 import "../css/SignInForm.css";
 export default function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -27,29 +28,23 @@ export default function SignUpForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-
+    const{name,email,password,confirmPassword}=formData;
+     if(!email || !name || !password){
+       alert("please fill out the form");
+       return
+     }
     try {
-      const response = await fetch("http://localhost:5000/api/users/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
+      const response=await api.post("/users/register",formData)
+      if (!response.data) {
+        throw new Error(response.message || "Registration failed");
       }
 
-      console.log("Registration successful:", data);
-      localStorage.setItem("user", data.name);
+      console.log("Registration successful:", response.data);
+      localStorage.setItem("user", response.data.name);
     
       setLoginError(false);
       setFormStep(2);
-      dispatch(loginUser(data));
+      dispatch(loginUser(response.data));
      
     } catch (error) {
       console.error("Registration error:", error);

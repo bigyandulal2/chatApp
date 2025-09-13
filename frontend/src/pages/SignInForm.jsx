@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import SignUpSocial from "../section/signupform/SignUpSocial";
 import { FiMail, FiAlertCircle, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { useApi } from "../hooks/useApi";
+import api from "../utils/api"
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../redux/feature/LoginActionSlicer";
 import "../css/SignInForm.css";
@@ -16,12 +16,13 @@ export default function SignInForm() {
   const dispatch = useDispatch();
   const login = useSelector((state) => state.room.login);
   const isEmailValid = () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
-  const {
-    data: loginResponse,
-    loading,
-    error,
-    refetch: userLogin,
-  } = useApi("http://localhost:5000/api/users/login", "POST", formData);
+  // const {
+  //   data: loginResponse,
+  //   loading,
+  //   error,
+  //   refetch: userLogin,
+  // } = useApi("http://localhost:5000/api/users/login", "POST", formData);
+    
 
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -29,36 +30,36 @@ export default function SignInForm() {
   const handlePasswordChange = (e) =>
     setFormData((prev) => ({ ...prev, password: e.target.value }));
   const handleSubmit = async () => {
+    
     if (!formData.email || !formData.password) {
       alert("Please fill in all fields");
       return;
-    }
 
-    await userLogin({
-      email: formData.email,
-      password: formData.password,
-    });
-  };
-  useEffect(() => {
-    if (error) {
-      setLoginError(true);
-      const timeout = setTimeout(() => {
-        setLoginError(false);
-      }, 5000);
-      return () => clearTimeout(timeout);
     }
-  }, [error]);
-
-  useEffect(() => {
-    if (loginResponse && loginResponse.token) {
+    try{
+      const res=await api.post("/users/login",{email:formData.email,password:formData.password})
+      if(!res.data){
+        setLoginError(true);
+         throw new Error("error fetching the data");
+      }
       setLoginError(false);
-      console.log("here is from the signin form", loginResponse);
-      dispatch(loginUser(loginResponse));
+      console.log("here is from the signin form",res.data);
+      dispatch(loginUser(res.data));
       alert("Login successful!");
-      console.log("loginresponsehere", loginResponse);
-      navigate("/room", { state: { data: loginResponse } });
+      navigate("/room", { state: { data: res.data } });
+
     }
-  }, [loginResponse, navigate]);
+    catch(error){
+       console.error(error,"from signin");
+    }
+    
+   
+  
+    
+  };
+
+
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 px-4 py-12">
       <motion.div

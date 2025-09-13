@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -9,7 +8,7 @@ import { useApi } from "../../hooks/useApi";
 import "../../css/AvailableRoom.css";
 
 import { socket } from "../../utils/Socket";
-import {useFetchApi} from "../../hooks/useFetchApi"
+import { usePost } from "../../hooks/usePost";
 import api from "../../utils/api";
 
 export default function AvailableRoom() {
@@ -24,11 +23,10 @@ export default function AvailableRoom() {
   const [passwordChecking, setPasswordChecking] = useState(false);
   const [passwordError, setPasswordError] = useState("");
 
-
-  // const { data, loading, error, refetch } = useApi(
-  //   "http://localhost:5000/api/rooms/allRooms"
-  // );
-  const {data,loading,error,refetch}=useFetchApi("/api/rooms/allRooms");
+  const { data, loading, error, refetch } = useApi(
+    "/rooms/allRooms"
+  );
+  
 
   const handleRoomCreated = () => {
     refetch();
@@ -39,28 +37,22 @@ export default function AvailableRoom() {
     const handleJoinOk = (isJoin) => {
       if (isJoin && joinedRoomId) {
         navigate(`/room/${joinedRoomId}`);
-        
       }
     };
-    const handleNewRoom=()=>{
-      refetch();
-    }
     
     socket.on("joinRoomLayout", handleJoinOk);
     // socket.on("join-error", handleJoinErr);
     socket.emit("join-room",data=>{
        console.log("from joinRoom data",data);
     })
-    socket.on("newRoom-added",handleNewRoom)
 
     return () => {
       socket.off("joinRoomLayout", handleJoinOk);
       // socket.off("join-error", handleJoinErr);
-      socket.off("join-room");
-      socket.off("newRoom-added");
+      socket.off("join-room")
       
     };
-  }, [joinedRoomId, navigate,refetch]);
+  }, [joinedRoomId, navigate]);
 
   if (loading) return <div className="loading">Loading rooms...</div>;
   if (error) return <div className="error">Error: {error}</div>;
@@ -82,7 +74,7 @@ export default function AvailableRoom() {
 
       // If you prefer HTTP:
       // await api.post("/api/rooms/join", { roomId: joinTargetRoom.roomId, password })
-     const res= await api.post("/api/rooms/joinRoom",{roomId:joinTargetRoom.roomId,password});
+     const res= await api.post("/rooms/joinRoom",{roomId:joinTargetRoom.roomId,password});
      console.log(res.data);
 
      
