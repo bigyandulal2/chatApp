@@ -5,7 +5,6 @@ const initialState = {
   createRoom: false,
   joinRoom: false,
   roomList: [],
-  
 };
 
 export const RoomActionSlicer = createSlice({
@@ -24,11 +23,12 @@ export const RoomActionSlicer = createSlice({
     addRoom(state, action) {
       state.roomList.push(action.payload);
     },
+   
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { toggle, createRoom, joinRoom, addRoom } =
+export const { toggle, createRoom, joinRoom, addRoom} =
   RoomActionSlicer.actions;
 
 export default RoomActionSlicer.reducer;

@@ -6,6 +6,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const roomRoutes = require("./routes/roomRoutes");
+const { StreamChat } = require("stream-chat");
 const socketHandlers = require("./utils/socket/index"); // 👈 import socket handlers
 
 const app = express();
@@ -38,6 +39,22 @@ app.use((req, res, next) => {
 // ====================
 // API Routes
 // ====================
+app.post("/api/token", (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ error: "User ID is required" });
+  }
+
+  const serverClient = StreamChat.getInstance(
+    process.env.STREAM_API_KEY,
+    process.env.STREAM_API_SECRET
+  );
+
+  const token = serverClient.createToken(userId);
+
+  res.json({ token });
+});
 app.use("/api/users", userRoutes);
 app.use("/api/rooms", roomRoutes);
 

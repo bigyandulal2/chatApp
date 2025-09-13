@@ -1,26 +1,85 @@
-
-import React, { useEffect, useState } from "react";
-import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaPhone } from "react-icons/fa";
+import React, { useState } from "react";
+import {
+  FaMicrophone,
+  FaMicrophoneSlash,
+  FaVideo,
+  FaVideoSlash,
+  FaPhone,
+} from "react-icons/fa";
 import { useSelector } from "react-redux";
-import {useParams} from "react-router-dom";
-import {socket} from "../../utils/Socket";
+import { useParams, useNavigate } from "react-router-dom";
+import { socket } from "../../utils/Socket";
+import {
+  useCall,
+  useCallStateHooks,
+  ParticipantView,
+} from "@stream-io/video-react-sdk";
 
 export default function Screen() {
-  const {id}=useParams();
-  const [isMike, setIsMike] = useState(false);
-  const [isVideo, setIsVideo] = useState(false);
+  const { id } = useParams();
+  const navigate = useNavigate();
   const isExpanded = useSelector((state) => state.uistate.isExpanded);
-  useEffect(()=>{
-    socket.emit("onmike",{roomId:id,text:"i am mic"});
-  },[isMike])
- function handleMike(){
-     setIsMike(prev=>!prev);
-     
- }
+  const myId = localStorage.getItem("userId");
+
+  const call = useCall();
+  const { useLocalParticipant } = useCallStateHooks();
+  const localParticipant = useLocalParticipant();
+
+  const [isMicOn, setIsMicOn] = useState(true);
+  const [isVideoOn, setIsVideoOn] = useState(true);
+
+  // Toggle microphone
+  const handleMicToggle = async () => {
+    if (!call) return;
+
+    try {
+      if (isMicOn) {
+        await call.microphone.disable();
+        socket.emit("onmike", { roomId: id, text: "mic off" });
+      } else {
+        await call.microphone.enable();
+        socket.emit("onmike", { roomId: id, text: "mic on" });
+      }
+      setIsMicOn((prev) => !prev);
+    } catch (error) {
+      console.error("Failed to toggle microphone:", error);
+    }
+  };
+
+  // Toggle camera
+  const handleVideoToggle = async () => {
+    if (!call) return;
+
+    try {
+      if (isVideoOn) {
+        await call.camera.disable();
+      } else {
+        await call.camera.enable();
+      }
+      setIsVideoOn((prev) => !prev);
+    } catch (error) {
+      console.error("Failed to toggle camera:", error);
+    }
+  };
+
+  // Leave the call
+  const handleEndCall = async () => {
+    if (!call) return;
+
+    try {
+      await call.leave();
+      navigate("/room"); // Redirect to room/home
+    } catch (error) {
+      console.error("Failed to leave the call:", error);
+    }
+  };
+
   return (
     <div
       className={`${
-        isExpanded ? "col-span-12 md:col-span-11" : "col-span-12 md:col-span-9"
+        isExpanded
+          ? "col-span-12 md:col-span-11"
+          : "col-span-12 md:col-span-9"
       } bg-gray-900 flex flex-col justify-between md:block relative`}
     >
       <aside className="pt-2">
@@ -29,14 +88,14 @@ export default function Screen() {
           <div className="flex gap-[10px] bg-black px-3 py-1 rounded-lg">
             {/* Mic */}
             <button
-              onClick={() => handleMike()}
+              onClick={handleMicToggle}
               className={`rounded-xl p-2 border shadow-lg ${
-                isMike
+                isMicOn
                   ? "bg-gray-900 border-blue-800 hover:bg-blue-600"
                   : "bg-blue-600 border-blue-800 hover:bg-blue-700"
               }`}
             >
-              {isMike ? (
+              {isMicOn ? (
                 <FaMicrophone className="text-2xl text-white" />
               ) : (
                 <FaMicrophoneSlash className="text-2xl text-white" />
@@ -45,14 +104,14 @@ export default function Screen() {
 
             {/* Video */}
             <button
-              onClick={() => setIsVideo(!isVideo)}
+              onClick={handleVideoToggle}
               className={`rounded-xl p-2 border shadow-lg ${
-                isVideo
+                isVideoOn
                   ? "bg-gray-900 border-blue-800 hover:bg-blue-600"
                   : "bg-blue-600 border-red-800"
               }`}
             >
-              {isVideo ? (
+              {isVideoOn ? (
                 <FaVideo className="text-xl text-white" />
               ) : (
                 <FaVideoSlash className="text-xl text-white" />
@@ -60,7 +119,10 @@ export default function Screen() {
             </button>
 
             {/* End Call */}
-            <button className="bg-gray-900 hover:bg-blue-600 rounded-xl p-2 border border-blue-800 shadow-lg">
+            <button
+              onClick={handleEndCall}
+              className="bg-gray-900 hover:bg-blue-600 rounded-xl p-2 border border-blue-800 shadow-lg"
+            >
               <FaPhone className="text-xl text-red-500 cursor-pointer" />
             </button>
           </div>
@@ -68,12 +130,10 @@ export default function Screen() {
 
         {/* Video Section */}
         <div className="w-full px-3 h-[50vh] lg:h-[60vh]">
-          {isVideo ? (
-            <video
-              className="bg-black h-full w-full object-cover rounded-lg"
-              autoPlay
-              muted
-              playsInline
+          {isVideoOn && localParticipant ? (
+            <ParticipantView
+              participant={localParticipant}
+              className="h-full w-full rounded-lg object-cover"
             />
           ) : (
             <div className="bg-gray-800 h-full object-cover flex items-center justify-center rounded-lg text-gray-400">
@@ -92,7 +152,7 @@ export default function Screen() {
               <span className="bg-blue-600 text-xs px-2 py-0.5 rounded absolute bottom-2 left-0">
                 Owner
               </span>
-              {isMike ? (
+              {isMicOn ? (
                 <FaMicrophone className="text-white absolute bottom-[10px] right-2" />
               ) : (
                 <FaMicrophoneSlash className="text-blue-500 absolute bottom-[10px] right-2" />

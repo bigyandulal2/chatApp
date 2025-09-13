@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import ImagePreviewer from "../../components/ImagePreviewer";
-
+import MessageTranslator from "../../components/MessageTranslator";
 export default function MessageList({ messages }) {
   const currentUser = useSelector((state) => state.login.user); // e.g. "nancy"
   const usersInRoom = useSelector((state) => state.chat.usersInRoom);
@@ -64,14 +64,21 @@ export default function MessageList({ messages }) {
               </div>
 
               {/* Message Text */}
-              {m.text && (
+              {/* {m.text && (
                 <div
                   className={`inline-block px-3 py-2 rounded-xl bg-gray-800 ${
                     isPrivate ? "text-red-400" : "text-white"
                   }`}
                 >
                   {m.text}
-                </div>
+                </div> */}
+                {m.text && (
+  <div className="inline-block bg-gray-800 p-3 rounded-xl text-white">
+    <div>{m.text}</div>
+    <MessageTranslator text={m.text} />
+  </div>
+   
+
               )}
 
               {/* Image */}

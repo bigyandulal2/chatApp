@@ -10,31 +10,36 @@ import { Provider } from "react-redux";
 import SignInForm from "./pages/SignInForm.jsx";
 import ProtectedRoute from "./route/ProtectedRoute.jsx";
 import ChatMessageLayout from "./pages/ChatMessageLayout.jsx";
+
+import VideoProvider from "./utils/VideoContext.jsx";
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<App />} />
-          <Route path="/signup" element={<SignUpForm />} />
-          <Route path="/signin" element={<SignInForm />} />
-          <Route
-            path="/room"
-            element={
-              <ProtectedRoute>
-                <ChatAppLayout />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/room/:id"
-            element={
-              <ProtectedRoute>
-                <ChatMessageLayout />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+        <VideoProvider>
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/signup" element={<SignUpForm />} />
+            <Route path="/signin" element={<SignInForm />} />
+            <Route
+              path="/room"
+              element={
+                <ProtectedRoute>
+                  <ChatAppLayout />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/room/:id"
+              element={
+                <ProtectedRoute>
+                  <ChatMessageLayout />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </VideoProvider>
       </BrowserRouter>
     </Provider>
   </StrictMode>
