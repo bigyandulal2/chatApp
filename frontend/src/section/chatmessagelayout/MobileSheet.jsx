@@ -1,4 +1,4 @@
-// src/components/chat/ChatSidebar/DesktopSidebar.jsx
+// src/components/chat/ChatSidebar/MobileSheet.jsx
 import React from "react";
 import Tabs from "./Tabs";
 import ThreadHeader from "./ThreadHeader";
@@ -7,34 +7,34 @@ import Composer from "./Composer";
 import PeopleList from "./PeopleList";
 import Settings from "./Settings";
 
-export default function DesktopSidebar({
-  isExpanded,
+export default function MobileSheet({
   selected,
-  onChat,
-  onPeople,
-  onSetting,
+  setSelected,
+  sheetHeights,
   messages,
   input,
   setInput,
   onSend,
 }) {
   return (
-    <section className="hidden md:flex flex-1 flex-col h-screen">
-      <Tabs selected={selected} onChat={onChat} onPeople={onPeople} onSetting={onSetting} />
+    <section
+      className="flex flex-col h-full"
+      style={{
+        height: `${sheetHeights.sheetH}px`,
+      }}
+    >
+      <Tabs
+        selected={selected}
+        onChat={() => setSelected("chat")}
+        onPeople={() => setSelected("people")}
+        onSetting={() => setSelected("setting")}
+      />
 
       {selected === "chat" && (
         <>
           <ThreadHeader label="Chat" youLabel="You" />
-          {!isExpanded && (
-            <>
-              <MessageList messages={messages} />
-              <Composer
-                input={input}
-                setInput={setInput}
-                onSend={onSend}
-              />
-            </>
-          )}
+          <MessageList messages={messages} />
+          <Composer input={input} setInput={setInput} onSend={onSend} />
         </>
       )}
 

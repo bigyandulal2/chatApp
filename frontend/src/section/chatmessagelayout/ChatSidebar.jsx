@@ -153,7 +153,7 @@ const recipient=useSelector((state)=>state.chat.recipient);
   return (
     <div
       className={`${
-        isExpanded ? "col-span-2" : "col-span-3"
+        isExpanded ? "col-span-12 md:col-span-2" : "col-span-12 md:col-span-3"
       } bg-gray-900 md:h-auto flex text-white`}
     >
       {/* Desktop / Tablet */}

@@ -16,12 +16,11 @@ export default function DesktopSidebar({
   messages,
   input,
   setInput,
- 
   onSend,
 }) {
   return (
-    <section className="hidden md:flex flex-1 flex-col h-screen">
-      <Tabs selected={selected} onChat={onChat}  onPeople={onPeople} onSetting={onSetting} />
+    <section className="flex flex-1 flex-col h-screen">
+      <Tabs selected={selected} onChat={onChat} onPeople={onPeople} onSetting={onSetting} />
 
       {selected === "chat" && (
         <>
@@ -29,11 +28,7 @@ export default function DesktopSidebar({
           {!isExpanded && (
             <>
               <MessageList messages={messages} />
-              <Composer
-                input={input}
-                setInput={setInput}
-                onSend={onSend}
-              />
+              <Composer input={input} setInput={setInput} onSend={onSend} />
             </>
           )}
         </>
