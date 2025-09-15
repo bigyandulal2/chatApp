@@ -12,23 +12,31 @@ export default function ChatMessageLayout() {
   const [call, setCall] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // useEffect(() => {
+  //   const joinCall = async () => {
+  //     if (!client || !callId) return;
+
+  //     try {
+  //       const callInstance = client.call("default", callId);
+  //       await callInstance.join({ create: true }); // join the call, create if not exists
+  //       setCall(callInstance);
+  //     } catch (err) {
+  //       console.error("Failed to join call:", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   joinCall();
+  // }, [client, callId]);
   useEffect(() => {
-    const joinCall = async () => {
-      if (!client || !callId) return;
-
-      try {
-        const callInstance = client.call("default", callId);
-        await callInstance.join({ create: true }); // join the call, create if not exists
-        setCall(callInstance);
-      } catch (err) {
-        console.error("Failed to join call:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    joinCall();
+    if (!client || !callId) return;
+  
+    const callInstance = client.call("default", callId);
+    setCall(callInstance);
+    setLoading(false); // Set loading to false since we aren't joining yet
   }, [client, callId]);
+  
 
   if (loading || !call) {
     return <div className="text-white p-4">Joining the call...</div>;

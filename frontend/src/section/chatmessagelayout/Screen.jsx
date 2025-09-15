@@ -26,19 +26,19 @@ export default function Screen() {
   const localParticipant = useLocalParticipant();
   const participants = useParticipants();
 
-  const [isMicOn, setIsMicOn] = useState(true);
-  const [isVideoOn, setIsVideoOn] = useState(true);
+  const [isMicOn, setIsMicOn] = useState(false);
+  const [isVideoOn, setIsVideoOn] = useState(false);
 
   // Toggle microphone
   const handleMicToggle = async () => {
     if (!call) return;
-
+  
     try {
       if (isMicOn) {
         await call.microphone.disable();
         socket.emit("onmike", { roomId: id, text: "mic off" });
       } else {
-        await call.microphone.enable();
+        await call.microphone.enable(); // ⚠️ This will ask permission if not already granted
         socket.emit("onmike", { roomId: id, text: "mic on" });
       }
       setIsMicOn((prev) => !prev);
@@ -46,23 +46,22 @@ export default function Screen() {
       console.error("Failed to toggle microphone:", error);
     }
   };
-
   // Toggle camera
   const handleVideoToggle = async () => {
     if (!call) return;
-
+  
     try {
       if (isVideoOn) {
         await call.camera.disable();
       } else {
-        await call.camera.enable();
+        await call.camera.enable(); // ⚠️ This will ask for camera permission
       }
       setIsVideoOn((prev) => !prev);
     } catch (error) {
       console.error("Failed to toggle camera:", error);
     }
   };
-
+  
   // Leave the call
   const handleEndCall = async () => {
     if (!call) return;
