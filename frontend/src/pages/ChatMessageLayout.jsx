@@ -12,12 +12,18 @@ export default function ChatMessageLayout() {
   const [call, setCall] = useState(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    if (!client || !callId) return;
+    const joinCall = async () => {
+      if (!client || !callId) return;
   
-    const callInstance = client.call("default", callId);
-    setCall(callInstance);
-    setLoading(false); // Set loading to false since we aren't joining yet
+      const callInstance = client.call("default", callId);
+      await callInstance.join(); // ✅ join the call!
+      setCall(callInstance);
+      setLoading(false);
+    };
+  
+    joinCall();
   }, [client, callId]);
+  
   
 
   if (loading || !call) {
