@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import {
   FaMicrophone,
   FaMicrophoneSlash,
@@ -13,21 +13,49 @@ import {
   useCall,
   useCallStateHooks,
   ParticipantView,
+  ParticipantsAudio,
 } from "@stream-io/video-react-sdk";
 
 export default function Screen() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isExpanded = useSelector((state) => state.uistate.isExpanded);
-  const myId = localStorage.getItem("userId");
 
   const call = useCall();
-  const { useLocalParticipant, useParticipants } = useCallStateHooks();
+  const {
+    useLocalParticipant,
+    useParticipants,
+    useMicrophoneState,
+    useCameraState,
+  } = useCallStateHooks();
+
   const localParticipant = useLocalParticipant();
   const participants = useParticipants();
+  const { microphone, isMute: micIsMute, hasBrowserPermission: micHasPerm } =
+    useMicrophoneState();
+  const { camera, isEnabled: cameraIsEnabled, hasBrowserPermission: camHasPerm } =
+    useCameraState();
 
-  const [isMicOn, setIsMicOn] = useState(false);
-  const [isVideoOn, setIsVideoOn] = useState(false);
+  // Derived booleans
+  const isMicOn = !micIsMute;
+  const isVideoOn = cameraIsEnabled;
+
+  // Debug
+  useEffect(() => {
+    console.log("Mic state:", {
+      isMicOn,
+      micHasPerm,
+      micStatus: microphone?.status,
+    });
+  }, [isMicOn, micHasPerm, microphone]);
+
+  useEffect(() => {
+    console.log("Camera state:", {
+      isVideoOn,
+      camHasPerm,
+      cameraStatus: camera?.status,
+    });
+  }, [isVideoOn, camHasPerm, camera]);
 
   // Toggle microphone
   const handleMicToggle = async () => {
@@ -35,13 +63,12 @@ export default function Screen() {
 
     try {
       if (isMicOn) {
-        await call.microphone.disable();
+        await microphone.disable();
         socket.emit("onmike", { roomId: id, text: "mic off" });
       } else {
-        await call.microphone.enable(); // Permission asked here
+        await microphone.enable();
         socket.emit("onmike", { roomId: id, text: "mic on" });
       }
-      setIsMicOn((prev) => !prev);
     } catch (error) {
       console.error("Failed to toggle microphone:", error);
       alert("Microphone access denied or not available.");
@@ -54,18 +81,17 @@ export default function Screen() {
 
     try {
       if (isVideoOn) {
-        await call.camera.disable();
+        await camera.disable();
       } else {
-        await call.camera.enable(); // Permission asked here
+        await camera.enable();
       }
-      setIsVideoOn((prev) => !prev);
     } catch (error) {
       console.error("Failed to toggle camera:", error);
       alert("Camera access denied or not available.");
     }
   };
 
-  // Leave the call
+  // Leave call
   const handleEndCall = async () => {
     if (!call) return;
 
@@ -80,7 +106,7 @@ export default function Screen() {
   return (
     <div
       className={`${
-        isExpanded ? " col-span-12 md:col-span-10" : " col-span-12 md:col-span-9"
+        isExpanded ? "col-span-12 md:col-span-10" : "col-span-12 md:col-span-9"
       } bg-gray-900 flex flex-col justify-between md:block relative`}
     >
       <aside className="pt-2">
@@ -129,9 +155,9 @@ export default function Screen() {
           </div>
         </div>
 
-        {/* Video Section (local + remote participants) */}
+        {/* Video Section (local + remote) */}
         <div className="w-full px-3 h-[30vh] lg:h-[60vh] grid grid-cols-2 gap-2">
-          {/* Local participant video only when video is on */}
+          {/* Local video only when video is on */}
           {isVideoOn && localParticipant ? (
             <div className="rounded-lg overflow-hidden">
               <ParticipantView
@@ -145,9 +171,9 @@ export default function Screen() {
             </div>
           )}
 
-          {/* Remote participants */}
+          {/* Remote participants video */}
           {participants
-            .filter((participant) => participant.id !== localParticipant?.id)
+            .filter((p) => p.id !== localParticipant?.id)
             .map((participant) => (
               <div key={participant.id} className="rounded-lg overflow-hidden">
                 <ParticipantView
@@ -157,6 +183,12 @@ export default function Screen() {
               </div>
             ))}
         </div>
+
+        {/* Audio output for ALL participants (including remote) */}
+        <ParticipantsAudio
+       participants={participants.filter((p) => p.id !== localParticipant?.id)}
+/>
+
 
         {/* User Tile */}
         <div className="flex-1 flex flex-col items-center justify-center pt-[20px]">
