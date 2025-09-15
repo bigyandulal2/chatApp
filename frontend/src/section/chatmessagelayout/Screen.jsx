@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   FaMicrophone,
   FaMicrophoneSlash,
@@ -17,9 +17,12 @@ import {
 } from "@stream-io/video-react-sdk";
 
 export default function Screen() {
-  const { id } = useParams();
+  const { id: roomId } = useParams();
   const navigate = useNavigate();
   const isExpanded = useSelector((state) => state.uistate.isExpanded);
+  const [remoteMicStates, setRemoteMicStates] = useState({});
+
+  const localUserId = localStorage.getItem("userId");
 
   const call = useCall();
   const {
@@ -31,84 +34,128 @@ export default function Screen() {
 
   const localParticipant = useLocalParticipant();
   const participants = useParticipants();
-  const { microphone, isMute: micIsMute, hasBrowserPermission: micHasPerm } =
-    useMicrophoneState();
-  const { camera, isEnabled: cameraIsEnabled, hasBrowserPermission: camHasPerm } =
-    useCameraState();
 
-  // Derived booleans
-  const isMicOn = !micIsMute;
+  const {
+    microphone,
+    isMute: micIsMute,       // from SDK
+    hasBrowserPermission: micHasPerm,
+    status: micStatus,         // maybe status provides “enabled” / “disabled”
+  } = useMicrophoneState();
+
+  const {
+    camera,
+    isEnabled: cameraIsEnabled,
+    hasBrowserPermission: camHasPerm,
+    status: cameraStatus,
+  } = useCameraState();
+
   const isVideoOn = cameraIsEnabled;
 
-  // Debug
-  useEffect(() => {
-    console.log("Mic state:", {
-      isMicOn,
-      micHasPerm,
-      micStatus: microphone?.status,
-    });
-  }, [isMicOn, micHasPerm, microphone]);
+  // Sync local isMicOn based on SDK's micIsMute
+  const isMicOn = !micIsMute;
 
-  useEffect(() => {
-    console.log("Camera state:", {
-      isVideoOn,
-      camHasPerm,
-      cameraStatus: camera?.status,
-    });
-  }, [isVideoOn, camHasPerm, camera]);
+  // Emit mic status using localUserId
+  const emitMicStatus = async (micOn) => {
+    // Wait until SDK microphone status has changed?
+    // Possibly wait for microphone.enable()/disable() to resolve
+    if (localUserId) {
+      socket.emit("onmike", {
+        roomId,
+        userId: localUserId,
+        micOn,
+      });
+    }
+  };
 
-  // Toggle microphone
   const handleMicToggle = async () => {
-    if (!call) return;
+    if (!call || !microphone) return;
 
     try {
       if (isMicOn) {
         await microphone.disable();
-        socket.emit("onmike", { roomId: id, text: "mic off" });
+        // Optionally check microphone.status or micIsMute after disable
+        emitMicStatus(false);
       } else {
         await microphone.enable();
-        socket.emit("onmike", { roomId: id, text: "mic on" });
+        emitMicStatus(true);
       }
     } catch (error) {
       console.error("Failed to toggle microphone:", error);
-      alert("Microphone access denied or not available.");
     }
   };
 
-  // Toggle camera
   const handleVideoToggle = async () => {
-    if (!call) return;
+    if (!call || !camera) return;
 
     try {
-      if (isVideoOn) {
+      if (cameraIsEnabled) {
         await camera.disable();
       } else {
         await camera.enable();
       }
     } catch (error) {
-      console.error("Failed to toggle camera:", error);
-      alert("Camera access denied or not available.");
+      console.error("Failed to toggle video:", error);
     }
   };
 
-  // Leave call
   const handleEndCall = async () => {
     if (!call) return;
-
     try {
       await call.leave();
       navigate("/room");
     } catch (error) {
-      console.error("Failed to leave the call:", error);
+      console.error("Failed to leave call:", error);
     }
   };
 
+  // socket listener for remote mic changes
+  useEffect(() => {
+    const handler = ({ userId, micOn }) => {
+      if (userId) {
+        setRemoteMicStates((prev) => ({
+          ...prev,
+          [userId]: micOn,
+        }));
+      }
+    };
+    socket.on("userMicStateChanged", handler);
+    return () => {
+      socket.off("userMicStateChanged", handler);
+    };
+  }, []);
+
+  // Memoize unique participants by userId
+  const uniqueRemoteParticipants = useMemo(() => {
+    const seen = new Set();
+    return participants.filter((p) => {
+      if (!p?.userId) return false;
+      if (p.userId === localUserId) return false;
+      if (seen.has(p.userId)) return false;
+      seen.add(p.userId);
+      return true;
+    });
+  }, [participants, localUserId]);
+
+  // Only remote participants whose mic is ON (according to our state)
+  const remoteParticipantsWithMicOn = useMemo(() => {
+    return uniqueRemoteParticipants.filter((p) => remoteMicStates[p.userId] === true);
+  }, [uniqueRemoteParticipants, remoteMicStates]);
+
+  // Logging for debugging
+  useEffect(() => {
+    console.log("SDK mic status:", {
+      micIsMute,
+      micHasPerm,
+      micStatus,
+      localUserId,
+      remoteMicStates,
+    });
+  }, [micIsMute, micHasPerm, micStatus, remoteMicStates, localUserId]);
+
   return (
-    <div
-      className={`${
-        isExpanded ? "col-span-12 md:col-span-10" : "col-span-12 md:col-span-9"
-      } bg-gray-900 flex flex-col justify-between md:block relative`}
-    >
+    <div className={`${
+      isExpanded ? "col-span-12 md:col-span-10" : "col-span-12 md:col-span-9"
+    } bg-gray-900 flex flex-col justify-between md:block relative`}>
       <aside className="pt-2">
         {/* Controls */}
         <div className="flex justify-center bg-gray-900 py-3 px-2">
@@ -155,9 +202,8 @@ export default function Screen() {
           </div>
         </div>
 
-        {/* Video Section (local + remote) */}
+        {/* Video Section */}
         <div className="w-full px-3 h-[30vh] lg:h-[60vh] grid grid-cols-2 gap-2">
-          {/* Local video only when video is on */}
           {isVideoOn && localParticipant ? (
             <div className="rounded-lg overflow-hidden">
               <ParticipantView
@@ -171,43 +217,21 @@ export default function Screen() {
             </div>
           )}
 
-          {/* Remote participants video */}
-          {participants
-            .filter((p) => p.id !== localParticipant?.id)
-            .map((participant) => (
-              <div key={participant.id} className="rounded-lg overflow-hidden">
-                <ParticipantView
-                  participant={participant}
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              </div>
-            ))}
+          {uniqueRemoteParticipants.map((participant) => (
+            <div key={participant.sessionId} className="rounded-lg overflow-hidden">
+              <ParticipantView
+                participant={participant}
+                className="w-full h-full object-cover rounded-lg"
+              />
+            </div>
+          ))}
         </div>
 
-        {/* Audio output for ALL participants (including remote) */}
-        <ParticipantsAudio
-       participants={participants.filter((p) => p.id !== localParticipant?.id)}
-/>
+        {/* Only play audio for remote participants whose mic is ON */}
+        {remoteParticipantsWithMicOn.length > 0 && (
+          <ParticipantsAudio participants={remoteParticipantsWithMicOn} />
+        )}
 
-
-        {/* User Tile */}
-        <div className="flex-1 flex flex-col items-center justify-center pt-[20px]">
-          <div className="flex flex-col items-center mb-8">
-            <div className="w-28 h-28 rounded-lg bg-gray-700 flex items-center justify-center text-5xl font-bold text-white">
-              AL
-            </div>
-            <div className="flex items-center gap-2 mt-2 relative w-full">
-              <span className="bg-blue-600 text-xs px-2 py-0.5 rounded absolute bottom-2 left-0">
-                Owner
-              </span>
-              {isMicOn ? (
-                <FaMicrophone className="text-white absolute bottom-[10px] right-2" />
-              ) : (
-                <FaMicrophoneSlash className="text-blue-500 absolute bottom-[10px] right-2" />
-              )}
-            </div>
-          </div>
-        </div>
       </aside>
     </div>
   );
