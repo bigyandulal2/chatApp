@@ -32,43 +32,46 @@ export default function Screen() {
   // Toggle microphone
   const handleMicToggle = async () => {
     if (!call) return;
-  
+
     try {
       if (isMicOn) {
         await call.microphone.disable();
         socket.emit("onmike", { roomId: id, text: "mic off" });
       } else {
-        await call.microphone.enable(); // ⚠️ This will ask permission if not already granted
+        await call.microphone.enable(); // Permission asked here
         socket.emit("onmike", { roomId: id, text: "mic on" });
       }
       setIsMicOn((prev) => !prev);
     } catch (error) {
       console.error("Failed to toggle microphone:", error);
+      alert("Microphone access denied or not available.");
     }
   };
+
   // Toggle camera
   const handleVideoToggle = async () => {
     if (!call) return;
-  
+
     try {
       if (isVideoOn) {
         await call.camera.disable();
       } else {
-        await call.camera.enable(); // ⚠️ This will ask for camera permission
+        await call.camera.enable(); // Permission asked here
       }
       setIsVideoOn((prev) => !prev);
     } catch (error) {
       console.error("Failed to toggle camera:", error);
+      alert("Camera access denied or not available.");
     }
   };
-  
+
   // Leave the call
   const handleEndCall = async () => {
     if (!call) return;
 
     try {
       await call.leave();
-      navigate("/room"); // Redirect to room/home
+      navigate("/room");
     } catch (error) {
       console.error("Failed to leave the call:", error);
     }
@@ -128,8 +131,8 @@ export default function Screen() {
 
         {/* Video Section (local + remote participants) */}
         <div className="w-full px-3 h-[30vh] lg:h-[60vh] grid grid-cols-2 gap-2">
-          {/* Local participant */}
-          {localParticipant ? (
+          {/* Local participant video only when video is on */}
+          {isVideoOn && localParticipant ? (
             <div className="rounded-lg overflow-hidden">
               <ParticipantView
                 participant={localParticipant}
@@ -142,7 +145,7 @@ export default function Screen() {
             </div>
           )}
 
-          {/* Remote participants (filter out local participant) */}
+          {/* Remote participants */}
           {participants
             .filter((participant) => participant.id !== localParticipant?.id)
             .map((participant) => (

@@ -16,7 +16,8 @@ export default function ChatMessageLayout() {
       if (!client || !callId) return;
   
       const callInstance = client.call("default", callId);
-      await callInstance.join(); // ✅ join the call!
+      // 👇 Prevent automatic media access
+      await callInstance.join({ microphone: false, camera: false });
       setCall(callInstance);
       setLoading(false);
     };
