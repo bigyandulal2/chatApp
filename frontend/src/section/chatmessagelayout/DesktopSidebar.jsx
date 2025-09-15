@@ -21,7 +21,7 @@ export default function DesktopSidebar({
 }) {
   return (
     <section className="hidden md:flex flex-1 flex-col h-screen">
-      <Tabs selected={selected} onChat={onChat} onPeople={onPeople} onSetting={onSetting} />
+      <Tabs selected={selected} onChat={onChat}  onPeople={onPeople} onSetting={onSetting} />
 
       {selected === "chat" && (
         <>

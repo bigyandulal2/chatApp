@@ -77,7 +77,7 @@ export default function Screen() {
   return (
     <div
       className={`${
-        isExpanded ? "col-span-12 md:col-span-11" : "col-span-12 md:col-span-9"
+        isExpanded ? "col-span-10" : "col-span-9"
       } bg-gray-900 flex flex-col justify-between md:block relative`}
     >
       <aside className="pt-2">

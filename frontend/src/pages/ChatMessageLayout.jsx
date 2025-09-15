@@ -11,24 +11,6 @@ export default function ChatMessageLayout() {
   const client = useStreamVideoClient(); // get StreamVideoClient from context
   const [call, setCall] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // useEffect(() => {
-  //   const joinCall = async () => {
-  //     if (!client || !callId) return;
-
-  //     try {
-  //       const callInstance = client.call("default", callId);
-  //       await callInstance.join({ create: true }); // join the call, create if not exists
-  //       setCall(callInstance);
-  //     } catch (err) {
-  //       console.error("Failed to join call:", err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   joinCall();
-  // }, [client, callId]);
   useEffect(() => {
     if (!client || !callId) return;
   
@@ -45,7 +27,7 @@ export default function ChatMessageLayout() {
   return (
    
     <StreamCall call={call}>
-      <div className="grid grid-cols-12 gap-0 bg-gray-900 min-h-screen">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-0 bg-gray-900 min-h-screen">
         {/* Main video/screen area */}
         <Screen />
 

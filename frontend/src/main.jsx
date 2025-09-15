@@ -9,15 +9,12 @@ import { store } from "./redux/Store.js";
 import { Provider } from "react-redux";
 import SignInForm from "./pages/SignInForm.jsx";
 import ProtectedRoute from "./route/ProtectedRoute.jsx";
-import ChatMessageLayout from "./pages/ChatMessageLayout.jsx";
-
-import VideoProvider from "./utils/VideoContext.jsx";
+import ChatMessage from "./pages/ChatMessage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <VideoProvider>
           <Routes>
             <Route path="/" element={<App />} />
             <Route path="/signup" element={<SignUpForm />} />
@@ -34,12 +31,12 @@ createRoot(document.getElementById("root")).render(
               path="/room/:id"
               element={
                 <ProtectedRoute>
-                  <ChatMessageLayout />
+                  <ChatMessage/>
                 </ProtectedRoute>
               }
             />
           </Routes>
-        </VideoProvider>
+       
       </BrowserRouter>
     </Provider>
   </StrictMode>
