@@ -16,14 +16,29 @@ export default function ChatMessageLayout() {
       if (!client || !callId) return;
   
       const callInstance = client.call("default", callId);
-      // 👇 Prevent automatic media access
-      await callInstance.join({ microphone: false, camera: false });
+  
+      try {
+        // Try joining the call first
+        await callInstance.join({ microphone: false, camera: false });
+      } catch (error) {
+        if (error.status === 404 || error.code === 16) {
+          // Call doesn't exist, create it
+          await callInstance.create();
+          // Join the newly created call
+          await callInstance.join({ microphone: false, camera: false });
+        } else {
+          console.error("Failed to join call:", error);
+          return;
+        }
+      }
+  
       setCall(callInstance);
       setLoading(false);
     };
   
     joinCall();
   }, [client, callId]);
+  
   
   
 
